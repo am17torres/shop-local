@@ -214,6 +214,14 @@ section.block.alt { background: var(--surface); border-top: 1px solid var(--line
 .line-item:last-child { border-bottom: 0; }
 .line-item .li-emoji { font-size: 1.8rem; }
 .line-item .li-name { font-weight: 600; }
+.fulfill { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.ftoggle {
+  font: inherit; font-size: 0.78rem; font-weight: 700; cursor: pointer;
+  padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line);
+  background: #fff; color: var(--muted);
+}
+.ftoggle.on { background: var(--brand); color: #fff; border-color: var(--brand); }
+
 .qty { display: flex; align-items: center; gap: 8px; }
 .qty button { width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--line); background: #fff; cursor: pointer; font-weight: 700; }
 .summary { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; position: sticky; top: 86px; }

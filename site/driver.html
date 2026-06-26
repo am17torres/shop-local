@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Driver Route — Burnt Hills Local Market</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="demo-banner">🧪 This is the driver's day-list for one batched loop. Confirmed orders become pickups &amp; drop-offs here. No route yet? Load a sample day.</div>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html"><span>Burnt Hills</span> <span class="dot">●</span> <span>Driver</span></a>
+      <nav class="nav">
+        <a href="index.html">For Shops</a>
+        <a href="storefront.html">Shop the Demo</a>
+        <a href="merchant.html">Merchant Dashboard</a>
+        <a href="driver.html" class="active">Driver Route</a>
+        <a href="order.html" class="cart-pill">Customer view →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" style="padding:34px 0 60px">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div class="section-head" style="margin:0">
+        <h2 id="routeTitle">Today's delivery loop</h2>
+        <p id="routeSummary" class="muted">Work the pickups first, then the drop-offs. Batched into one route.</p>
+      </div>
+      <div style="margin-left:auto" class="pill-row">
+        <button class="btn btn-ghost btn-sm" id="sampleBtn">Load a sample day</button>
+        <button class="btn btn-ghost btn-sm" id="optimizeBtn" data-not-implemented="Route optimization">Optimize route</button>
+        <button class="btn btn-ghost btn-sm" id="resetBtn">Clear</button>
+      </div>
+    </div>
+
+    <div class="callout" style="margin:20px 0">
+      <span class="ic">🚐</span>
+      <span>Early on this is one driver, one accountable loop — the texts and this list are the whole dispatch system. Mapping &amp; auto-sequencing (Onfleet/Circuit) come later.</span>
+    </div>
+
+    <h3>① Pickups</h3>
+    <div id="pickups"></div>
+    <p class="muted" id="emptyPickups" style="display:none">No pickups outstanding.</p>
+
+    <h3 style="margin-top:30px">② Drop-offs</h3>
+    <div id="dropoffs"></div>
+    <p class="muted" id="emptyDropoffs" style="display:none">No drop-offs yet — confirm and pick up some orders first.</p>
+
+    <h3 style="margin-top:30px">Completed</h3>
+    <div id="completed"></div>
+    <p class="muted" id="emptyCompleted" style="display:none">Delivered stops will move here.</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div>Burnt Hills Local Marketplace — concept demo</div>
+      <div>Sample data only • <a href="https://github.com/am17torres/shop-local">Project on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    function windowLabel(id) {
+      const w = BH.deliveryWindows.find((x) => x.id === id);
+      return w ? w.label : "Today's loop";
+    }
+
+    // A "route" = orders with confirmed DELIVERY items still to be delivered.
+    // Pickup-in-store items never appear here — the customer collects those.
+    function activeOrders() {
+      return BHApp.getOrders().filter((o) => BHApp.orderHasDelivery(o) && o.delivery !== "delivered");
+    }
+
+    function render() {
+      const orders = BHApp.getOrders();
+      const active = activeOrders();
+      const delivered = orders.filter((o) => o.delivery === "delivered");
+
+      // Pickups: each confirmed shop with delivery items, not yet picked up, is a stop.
+      const pickups = [];
+      active.forEach((o) => BHApp.confirmedMOs(o).forEach((mo) => {
+        if (BHApp.deliveryItems(mo).length && !mo.pickedUp) pickups.push({ o, mo });
+      }));
+
+      // Drop-offs: one per active order; ready once every shop with delivery items is picked up.
+      const dropoffs = active.map((o) => ({
+        o,
+        ready: BHApp.confirmedMOs(o).filter((mo) => BHApp.deliveryItems(mo).length).every((mo) => mo.pickedUp),
+      }));
+
+      const stops = pickups.length + dropoffs.length;
+      document.getElementById("routeTitle").textContent = active.length
+        ? `Today's loop · ${windowLabel(active[0].windowId)}`
+        : "Today's delivery loop";
+      document.getElementById("routeSummary").textContent = stops
+        ? `${pickups.length} pickup(s) and ${dropoffs.length} drop-off(s) across ${active.length} order(s).`
+        : "No active stops. Load a sample day, or confirm an order in the Merchant Dashboard.";
+
+      let seq = 0;
+
+      // Pickups
+      document.getElementById("emptyPickups").style.display = pickups.length ? "none" : "";
+      document.getElementById("pickups").innerHTML = pickups.map(({ o, mo }) => {
+        const shop = BH.lookups.shop(mo.shopId);
+        const items = BHApp.deliveryItems(mo).map((it) => `${it.emoji} ${it.nameSnapshot} ×${it.qty}`).join(" · ");
+        return stopCard(++seq, `${shop.emoji} Pick up at ${shop.name}`, `For order ${o.id} → ${o.address}`, items,
+          `<button class="btn btn-ok btn-sm" data-pick="${o.id}|${mo.shopId}">Mark picked up</button>`);
+      }).join("");
+
+      // Drop-offs
+      document.getElementById("emptyDropoffs").style.display = dropoffs.length ? "none" : "";
+      document.getElementById("dropoffs").innerHTML = dropoffs.map(({ o, ready }) => {
+        const shopsWithDelivery = BHApp.confirmedMOs(o).filter((mo) => BHApp.deliveryItems(mo).length);
+        const allItems = shopsWithDelivery.flatMap((mo) => BHApp.deliveryItems(mo).map((it) => `${it.emoji} ${it.nameSnapshot} ×${it.qty}`)).join(" · ");
+        const shopCount = shopsWithDelivery.length;
+        const action = ready
+          ? `<button class="btn btn-ok btn-sm" data-deliver="${o.id}">Mark delivered</button>`
+          : `<button class="btn btn-ghost btn-sm" disabled>Awaiting pickup</button>`;
+        return stopCard(++seq, `🏠 Deliver to customer`, `${o.address} · order ${o.id} · ${shopCount} shop(s)`, allItems, action);
+      }).join("");
+
+      // Completed
+      document.getElementById("emptyCompleted").style.display = delivered.length ? "none" : "";
+      document.getElementById("completed").innerHTML = delivered.map((o) =>
+        `<div class="dash-order"><header><span style="font-size:1.3rem">✅</span>
+          <div><div class="mname" style="font-weight:800">Delivered · ${o.address}</div>
+          <div class="muted" style="font-size:0.82rem">Order ${o.id}</div></div>
+          <span class="status confirmed" style="margin-left:auto">delivered</span></header></div>`).join("");
+
+      document.querySelectorAll("[data-pick]").forEach((b) => b.onclick = () => {
+        const [id, shopId] = b.dataset.pick.split("|");
+        BHApp.setPickup(id, shopId, true); BHApp.toast("Picked up"); render();
+      });
+      document.querySelectorAll("[data-deliver]").forEach((b) => b.onclick = () => {
+        BHApp.setDelivered(b.dataset.deliver); BHApp.toast("Delivered — nice work"); render();
+      });
+    }
+
+    function stopCard(seq, title, sub, items, action) {
+      return `<div class="dash-order">
+        <header>
+          <span class="step-num">${seq}</span>
+          <div><div class="mname" style="font-weight:800">${title}</div>
+          <div class="muted" style="font-size:0.82rem">${sub}</div></div>
+        </header>
+        <div class="items"><div class="row"><span>${items}</span></div></div>
+        <div class="actions">${action}
+          <button class="btn btn-ghost btn-sm" data-not-implemented="Turn-by-turn navigation" style="margin-left:auto">Navigate</button>
+        </div>
+      </div>`;
+    }
+
+    document.getElementById("resetBtn").onclick = () => { localStorage.removeItem("bh_orders"); render(); BHApp.toast("Cleared"); };
+    document.getElementById("sampleBtn").onclick = () => {
+      const mk = (id, address, mos) => ({ id, placedAt: Date.now(), windowId: "today-pm", address, delivery: "scheduled", merchantOrders: mos });
+      const mo = (shopId, items) => ({ shopId, status: "confirmed", pickedUp: false, items: items.map((it) => ({ fulfillment: "delivery", ...it })) });
+      const orders = BHApp.getOrders();
+      orders.unshift(
+        mk("BH-401", "8 Goode St, Burnt Hills", [
+          mo("hillside-pottery", [
+            { productId: "p-terracotta-8", nameSnapshot: 'Terracotta Planter, 8"', priceSnapshot: 28, emoji: "🪴", qty: 1 },
+          ]),
+        ]),
+        mk("BH-402", "14 Lake Hill Rd, Ballston Lake", [
+          mo("maple-main-grocer", [
+            { productId: "p-strawberry-jam", nameSnapshot: "Strawberry Jam", priceSnapshot: 7.5, emoji: "🍓", qty: 2 },
+            { productId: "p-wildflower-honey", nameSnapshot: "Wildflower Honey", priceSnapshot: 11, emoji: "🍯", qty: 1 },
+          ]),
+        ]),
+        mk("BH-403", "3 Kingsley Rd, Burnt Hills", [
+          mo("the-garden-shed", [
+            { productId: "p-potting-soil", nameSnapshot: "Organic Potting Soil, 8 qt", priceSnapshot: 9.5, emoji: "🪴", qty: 1 },
+          ]),
+          mo("burnt-hills-hardware", [
+            { productId: "p-claw-hammer", nameSnapshot: "16 oz Claw Hammer", priceSnapshot: 24, emoji: "🔨", qty: 1 },
+          ]),
+        ]),
+      );
+      localStorage.setItem("bh_orders", JSON.stringify(orders));
+      render();
+      BHApp.toast("Sample delivery day loaded");
+    };
+
+    window.BHRefresh = render; // live update when merchant confirms in another tab
+    render();
+    setInterval(render, 1500);
+  </script>
+</body>
+</html>
