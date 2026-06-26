@@ -60,13 +60,15 @@
   <script src="assets/app.js"></script>
   <script>
     /* ---- Faceted search over the mock catalog ---- */
-    const state = { q: "", categories: new Set(), shops: new Set(), inStock: false, maxPrice: 40, features: {} };
+    const PRICE_MAX = 90;
+    const state = { q: "", categories: new Set(), shops: new Set(), inStock: false, maxPrice: PRICE_MAX, features: {} };
 
     // Feature facets we expose (category-scoped in spirit; here we surface the useful ones).
     const FEATURE_FACETS = [
       { key: "material", label: "Material", type: "enum" },
+      { key: "roast", label: "Roast", type: "enum" },
       { key: "organic", label: "Organic only", type: "boolean" },
-      { key: "drainage", label: "Has drainage hole", type: "boolean" },
+      { key: "glutenFree", label: "Gluten-free only", type: "boolean" },
     ];
 
     // Flatten feature values into a searchable string (mirrors the tsvector idea).
@@ -117,7 +119,7 @@
       });
 
       html += `<div class="facet-group"><h4>Max price: <span id="priceVal">$${state.maxPrice}</span></h4>
-        <input type="range" min="4" max="40" value="${state.maxPrice}" id="priceRange" style="width:100%"/></div>`;
+        <input type="range" min="4" max="${PRICE_MAX}" value="${state.maxPrice}" id="priceRange" style="width:100%"/></div>`;
 
       html += `<div class="facet-group"><label class="facet-opt"><input type="checkbox" id="inStock" ${state.inStock ? "checked" : ""}/> In stock only</label></div>`;
 
@@ -160,9 +162,11 @@
       const shop = BH.lookups.shop(p.shopId);
       const featBits = [];
       if (p.features.material) featBits.push(p.features.material);
+      if (p.features.roast) featBits.push(p.features.roast + " roast");
       if (p.features.diameter) featBits.push(p.features.diameter + '"');
       if (p.features.size) featBits.push(p.features.size);
       if (p.features.organic) featBits.push("organic");
+      if (p.features.glutenFree) featBits.push("gluten-free");
       return `<div class="product-card">
         <div class="thumb">${p.emoji}</div>
         <div class="body">
@@ -182,7 +186,7 @@
 
     document.getElementById("q").oninput = (e) => { state.q = e.target.value; render(false); };
     document.getElementById("clearBtn").onclick = () => {
-      Object.assign(state, { q: "", categories: new Set(), shops: new Set(), inStock: false, maxPrice: 40, features: {} });
+      Object.assign(state, { q: "", categories: new Set(), shops: new Set(), inStock: false, maxPrice: PRICE_MAX, features: {} });
       document.getElementById("q").value = "";
       renderFacets(); render();
     };
