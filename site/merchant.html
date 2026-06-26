@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Merchant Dashboard — Burnt Hills Local Market</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="demo-banner">🧪 This is what a shop owner sees. No order yet? <a href="storefront.html">Place one in the storefront</a> first, or load a sample below.</div>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html"><span>Burnt Hills</span> <span class="dot">●</span> <span>Merchant</span></a>
+      <nav class="nav">
+        <a href="index.html">For Shops</a>
+        <a href="storefront.html">Shop the Demo</a>
+        <a href="merchant.html" class="active">Merchant Dashboard</a>
+        <a href="order.html" class="cart-pill">Customer view →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" style="padding:34px 0 60px">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div class="section-head" style="margin:0">
+        <h2>Incoming orders</h2>
+        <p>Tap <strong>Confirm</strong> to capture payment, or <strong>Reject</strong> to release the hold. That's the whole job.</p>
+      </div>
+      <div style="margin-left:auto" class="pill-row">
+        <button class="btn btn-ghost btn-sm" id="sampleBtn">Load a sample order</button>
+        <button class="btn btn-ghost btn-sm" id="resetBtn">Clear all</button>
+      </div>
+    </div>
+
+    <div class="callout" style="margin:20px 0">
+      <span class="ic">📲</span>
+      <span>In the real product, each of these also arrives as a text message. Replying <strong>Y</strong> or <strong>N</strong> does the same thing as the buttons here.</span>
+    </div>
+
+    <h3 style="margin-top:24px">Needs your confirmation</h3>
+    <div id="pending"></div>
+    <div class="empty" id="emptyPending" style="display:none">
+      <div class="big">☕</div>
+      <p>Nothing waiting. You're all caught up.</p>
+    </div>
+
+    <h3 style="margin-top:36px">Recently handled</h3>
+    <div id="handled"></div>
+    <p class="muted" id="emptyHandled" style="display:none">Confirmed and rejected orders will show here.</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div>Burnt Hills Local Marketplace — concept demo</div>
+      <div>Sample data only • <a href="https://github.com/am17torres/shop-local">Project on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    const DEADLINE_MS = 2 * 60 * 60 * 1000; // 2-hour confirm window
+
+    function countdown(placedAt) {
+      const left = placedAt + DEADLINE_MS - Date.now();
+      if (left <= 0) return "auto-cancel due";
+      const h = Math.floor(left / 3.6e6);
+      const m = Math.floor((left % 3.6e6) / 6e4);
+      const s = Math.floor((left % 6e4) / 1000);
+      return `auto-cancels in ${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    }
+
+    /* Each card represents one merchant_order (a shop's slice of a customer order). */
+    function moCard(order, mo, handled) {
+      const shop = BH.lookups.shop(mo.shopId);
+      const items = mo.items.map((it) =>
+        `<div class="row"><span>${it.emoji} ${it.nameSnapshot} × ${it.qty}</span><span>${BHApp.money(it.priceSnapshot * it.qty)}</span></div>`
+      ).join("");
+      const actions = handled
+        ? `<span class="status ${mo.status}">${mo.status}</span>
+           <span class="muted" style="margin-left:auto;font-size:0.85rem">${mo.status === "confirmed" ? "Payment captured" : "Hold released"}</span>`
+        : `<button class="btn btn-ok" data-confirm="${order.id}|${mo.shopId}">✓ Confirm &amp; charge</button>
+           <button class="btn btn-danger" data-reject="${order.id}|${mo.shopId}">✕ Reject</button>
+           <span class="deadline" style="margin-left:auto">⏱ ${countdown(order.placedAt)}</span>`;
+      return `<div class="dash-order">
+        <header>
+          <span style="font-size:1.4rem">${shop.emoji}</span>
+          <div>
+            <div class="mname" style="font-weight:800">${shop.name}</div>
+            <div class="muted" style="font-size:0.82rem">Order ${order.id}</div>
+          </div>
+          <span class="when">${new Date(order.placedAt).toLocaleTimeString()}</span>
+        </header>
+        <div class="items">${items}
+          <div class="row" style="border-top:1px solid var(--line);margin-top:6px;padding-top:10px"><strong>Authorized hold</strong><strong>${BHApp.money(BHApp.moTotal(mo))}</strong></div>
+        </div>
+        <div class="actions">${actions}</div>
+      </div>`;
+    }
+
+    function render() {
+      const orders = BHApp.getOrders();
+      const pending = [], handled = [];
+      orders.forEach((o) => o.merchantOrders.forEach((mo) => {
+        (mo.status === "authorized" ? pending : handled).push({ o, mo });
+      }));
+
+      document.getElementById("emptyPending").style.display = pending.length ? "none" : "";
+      document.getElementById("pending").innerHTML = pending.map(({ o, mo }) => moCard(o, mo, false)).join("");
+      document.getElementById("emptyHandled").style.display = handled.length ? "none" : "";
+      document.getElementById("handled").innerHTML = handled.map(({ o, mo }) => moCard(o, mo, true)).join("");
+
+      document.querySelectorAll("[data-confirm]").forEach((b) => b.onclick = () => act(b.dataset.confirm, "confirmed", "Order confirmed — payment captured"));
+      document.querySelectorAll("[data-reject]").forEach((b) => b.onclick = () => act(b.dataset.reject, "rejected", "Order rejected — hold released"));
+    }
+
+    function act(key, status, msg) {
+      const [orderId, shopId] = key.split("|");
+      BHApp.setMerchantOrderStatus(orderId, shopId, status);
+      BHApp.toast(msg);
+      render();
+    }
+
+    document.getElementById("resetBtn").onclick = () => { localStorage.removeItem("bh_orders"); render(); BHApp.toast("Cleared"); };
+    document.getElementById("sampleBtn").onclick = () => {
+      const orders = BHApp.getOrders();
+      orders.unshift({
+        id: "BH-" + Date.now().toString().slice(-6),
+        placedAt: Date.now(),
+        windowId: "today-pm",
+        merchantOrders: [{
+          shopId: "hillside-pottery",
+          status: "authorized",
+          items: [
+            { productId: "p-terracotta-8", nameSnapshot: 'Terracotta Planter, 8"', priceSnapshot: 28, emoji: "🪴", qty: 1 },
+            { productId: "p-ceramic-5", nameSnapshot: 'Glazed Ceramic Pot, 5"', priceSnapshot: 22, emoji: "🪴", qty: 2 },
+          ],
+        }],
+      });
+      localStorage.setItem("bh_orders", JSON.stringify(orders));
+      render();
+      BHApp.toast("Sample order loaded");
+    };
+
+    window.BHRefresh = render; // live update when an order is placed in another tab
+    render();
+    setInterval(render, 1000); // keep the countdown ticking
+  </script>
+</body>
+</html>
