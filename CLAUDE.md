@@ -42,6 +42,8 @@ code you add.
   a PR. Do not create a PR unless the user asks.
 - **Keep `docs/` authoritative.** New behavior gets documented alongside the
   code that introduces it.
+- **After merging any PR, print the live demo URL** in the reply:
+  <https://am17torres.github.io/shop-local/> (it auto-deploys from `main`).
 
 ## Checks — must pass before merge
 
