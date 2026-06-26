@@ -72,6 +72,16 @@
             const fb = it.fulfillment === "pickup" ? '<span class="tag">🏬 Pickup</span>' : '<span class="tag">🚐 Delivery</span>';
             return `<div class="row"><span>${it.emoji} ${it.nameSnapshot} × ${it.qty} ${fb}</span><span>${BHApp.money(it.priceSnapshot * it.qty)}</span></div>`;
           }).join("");
+          // each store sub-order tracks its own delivery status
+          let fulfillRow = "";
+          if (mo.status === "confirmed") {
+            if (BHApp.deliveryItems(mo).length) {
+              fulfillRow += `<div class="callout" style="margin:10px 0 0"><span class="ic">📦</span><span><strong>${DELIVERY_COPY[mo.delivery || "scheduled"]}</strong> — to ${o.address || "your address"}</span></div>`;
+            }
+            if (BHApp.pickupItems(mo).length) {
+              fulfillRow += `<div class="callout" style="margin:10px 0 0;background:#eef4ef;border-color:#cfe1d4;color:#356046"><span class="ic">🏬</span><span>Pick-up items ready to collect at ${shop.name}'s counter.</span></div>`;
+            }
+          }
           return `<div class="merchant-group">
             <header>
               <span style="font-size:1.2rem">${shop.emoji}</span>
@@ -81,24 +91,16 @@
             <div class="items" style="padding:12px 18px">${items}
               <div class="row total" style="border-top:1px solid var(--line);margin-top:8px;padding-top:10px"><strong>${BHApp.money(BHApp.moTotal(mo))}</strong></div>
               <p class="muted" style="font-size:0.85rem;margin:8px 0 0">${STATUS_COPY[mo.status]}</p>
+              ${fulfillRow}
             </div>
           </div>`;
         }).join("");
-        const deliveryRow = BHApp.orderHasDelivery(o)
-          ? `<div class="callout" style="margin:0 0 14px"><span class="ic">📦</span><span><strong>${DELIVERY_COPY[o.delivery || "scheduled"]}</strong> — to ${o.address || "your address"}</span></div>`
-          : "";
-        const hasPickup = o.merchantOrders.some((m) => m.status === "confirmed" && BHApp.pickupItems(m).length);
-        const pickupRow = hasPickup
-          ? `<div class="callout" style="margin:0 0 14px;background:#eef4ef;border-color:#cfe1d4;color:#356046"><span class="ic">🏬</span><span>Pick-up items are ready to collect at the shop counter.</span></div>`
-          : "";
         return `<div class="card" style="margin-bottom:24px">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
             <strong>Order ${o.id}</strong>
             <span class="tag">${rollup(o)}</span>
             <span class="muted" style="margin-left:auto;font-size:0.85rem">${new Date(o.placedAt).toLocaleString()}</span>
           </div>
-          ${deliveryRow}
-          ${pickupRow}
           ${groups}
         </div>`;
       }).join("");

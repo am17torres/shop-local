@@ -72,8 +72,17 @@
 
   /* ---------- orders store ---------- */
   function getOrders() {
-    try { return JSON.parse(localStorage.getItem(ORDERS_KEY)) || []; }
+    let orders;
+    try { orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || []; }
     catch (e) { return []; }
+    // migrate legacy order-level delivery / pickedUp -> per-store mo.delivery
+    orders.forEach((o) => (o.merchantOrders || []).forEach((mo) => {
+      if (mo.delivery === undefined) {
+        mo.delivery = o.delivery === "delivered" ? "delivered"
+          : mo.pickedUp ? "out_for_delivery" : "scheduled";
+      }
+    }));
+    return orders;
   }
   function saveOrders(o) { localStorage.setItem(ORDERS_KEY, JSON.stringify(o)); }
 
@@ -99,11 +108,10 @@
       placedAt: Date.now(),
       windowId,
       address: address || "12 Lakehill Rd, Burnt Hills",
-      delivery: "scheduled",      // scheduled -> out_for_delivery -> delivered
       merchantOrders: Object.entries(byShop).map(([shopId, items]) => ({
         shopId,
         status: "authorized",     // authorize-and-hold; capture on confirm
-        pickedUp: false,          // driver picks up confirmed items from the shop
+        delivery: "scheduled",    // per-store lifecycle: scheduled -> out_for_delivery -> delivered
         items,
       })),
     };
@@ -127,22 +135,13 @@
     return mo.items.reduce((a, it) => a + it.priceSnapshot * it.qty, 0);
   }
 
-  /* ---- delivery (driver workflow) ---- */
-  function setPickup(orderId, shopId, val) {
+  /* ---- delivery (driver workflow) ---- per store sub-order ---- */
+  function setMODelivery(orderId, shopId, status) {
     const orders = getOrders();
     const o = orders.find((x) => x.id === orderId);
     if (!o) return;
     const mo = o.merchantOrders.find((m) => m.shopId === shopId);
-    if (mo) mo.pickedUp = val;
-    // once anything is picked up, the order is out for delivery
-    if (o.delivery === "scheduled" && o.merchantOrders.some((m) => m.pickedUp)) o.delivery = "out_for_delivery";
-    saveOrders(orders);
-  }
-  function setDelivered(orderId) {
-    const orders = getOrders();
-    const o = orders.find((x) => x.id === orderId);
-    if (!o) return;
-    o.delivery = "delivered";
+    if (mo) mo.delivery = status;  // "scheduled" | "out_for_delivery" | "delivered"
     saveOrders(orders);
   }
   // confirmed merchant_orders are what the driver actually carries
@@ -159,13 +158,17 @@
   function orderHasDelivery(order) {
     return confirmedMOs(order).some((mo) => deliveryItems(mo).length);
   }
+  // a confirmed store sub-order is "on a route" once it has delivery items
+  function isDeliverable(mo) {
+    return mo.status === "confirmed" && deliveryItems(mo).length > 0;
+  }
 
   /* expose */
   window.BHApp = {
     money, toast, notImplemented,
     getCart, addToCart, setQty, setFulfillment, cartCount, clearCart, updateCartCount,
     getOrders, placeOrder, setMerchantOrderStatus, moTotal,
-    setPickup, setDelivered, confirmedMOs, deliveryItems, pickupItems, orderHasDelivery,
+    setMODelivery, confirmedMOs, deliveryItems, pickupItems, orderHasDelivery, isDeliverable,
   };
 
   /* keep cart badge + any live order views in sync across tabs */

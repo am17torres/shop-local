@@ -68,74 +68,65 @@
       return w ? w.label : "Today's loop";
     }
 
-    // A "route" = orders with confirmed DELIVERY items still to be delivered.
-    // Pickup-in-store items never appear here — the customer collects those.
-    function activeOrders() {
-      return BHApp.getOrders().filter((o) => BHApp.orderHasDelivery(o) && o.delivery !== "delivered");
+    // The route is built from confirmed store sub-orders that have delivery items.
+    // Each store sub-order carries its OWN delivery status, so it moves through
+    // pickup -> drop-off independently. Pickup-in-store items never appear here.
+    function deliverableStops() {
+      const stops = [];
+      BHApp.getOrders().forEach((o) => BHApp.confirmedMOs(o).forEach((mo) => {
+        if (BHApp.deliveryItems(mo).length) stops.push({ o, mo });
+      }));
+      return stops;
     }
 
     function render() {
-      const orders = BHApp.getOrders();
-      const active = activeOrders();
-      const delivered = orders.filter((o) => o.delivery === "delivered");
+      const all = deliverableStops();
+      const pickups = all.filter(({ mo }) => mo.delivery === "scheduled");
+      const dropoffs = all.filter(({ mo }) => mo.delivery === "out_for_delivery");
+      const completed = all.filter(({ mo }) => mo.delivery === "delivered");
 
-      // Pickups: each confirmed shop with delivery items, not yet picked up, is a stop.
-      const pickups = [];
-      active.forEach((o) => BHApp.confirmedMOs(o).forEach((mo) => {
-        if (BHApp.deliveryItems(mo).length && !mo.pickedUp) pickups.push({ o, mo });
-      }));
-
-      // Drop-offs: one per active order; ready once every shop with delivery items is picked up.
-      const dropoffs = active.map((o) => ({
-        o,
-        ready: BHApp.confirmedMOs(o).filter((mo) => BHApp.deliveryItems(mo).length).every((mo) => mo.pickedUp),
-      }));
-
-      const stops = pickups.length + dropoffs.length;
-      document.getElementById("routeTitle").textContent = active.length
-        ? `Today's loop · ${windowLabel(active[0].windowId)}`
+      document.getElementById("routeTitle").textContent = all.length
+        ? `Today's loop · ${windowLabel(all[0].o.windowId)}`
         : "Today's delivery loop";
-      document.getElementById("routeSummary").textContent = stops
-        ? `${pickups.length} pickup(s) and ${dropoffs.length} drop-off(s) across ${active.length} order(s).`
+      document.getElementById("routeSummary").textContent = (pickups.length + dropoffs.length)
+        ? `${pickups.length} pickup(s) and ${dropoffs.length} drop-off(s) across ${all.length} store order(s).`
         : "No active stops. Load a sample day, or confirm an order in the Merchant Dashboard.";
 
       let seq = 0;
 
-      // Pickups
+      // Pickups — one per store sub-order
       document.getElementById("emptyPickups").style.display = pickups.length ? "none" : "";
       document.getElementById("pickups").innerHTML = pickups.map(({ o, mo }) => {
         const shop = BH.lookups.shop(mo.shopId);
         const items = BHApp.deliveryItems(mo).map((it) => `${it.emoji} ${it.nameSnapshot} ×${it.qty}`).join(" · ");
         return stopCard(++seq, `${shop.emoji} Pick up at ${shop.name}`, `For order ${o.id} → ${o.address}`, items,
-          `<button class="btn btn-ok btn-sm" data-pick="${o.id}|${mo.shopId}">Mark picked up</button>`);
+          `<button class="btn btn-ok btn-sm" data-go="${o.id}|${mo.shopId}|out_for_delivery">Mark picked up</button>`);
       }).join("");
 
-      // Drop-offs
+      // Drop-offs — one per store sub-order (each store delivered independently)
       document.getElementById("emptyDropoffs").style.display = dropoffs.length ? "none" : "";
-      document.getElementById("dropoffs").innerHTML = dropoffs.map(({ o, ready }) => {
-        const shopsWithDelivery = BHApp.confirmedMOs(o).filter((mo) => BHApp.deliveryItems(mo).length);
-        const allItems = shopsWithDelivery.flatMap((mo) => BHApp.deliveryItems(mo).map((it) => `${it.emoji} ${it.nameSnapshot} ×${it.qty}`)).join(" · ");
-        const shopCount = shopsWithDelivery.length;
-        const action = ready
-          ? `<button class="btn btn-ok btn-sm" data-deliver="${o.id}">Mark delivered</button>`
-          : `<button class="btn btn-ghost btn-sm" disabled>Awaiting pickup</button>`;
-        return stopCard(++seq, `🏠 Deliver to customer`, `${o.address} · order ${o.id} · ${shopCount} shop(s)`, allItems, action);
+      document.getElementById("dropoffs").innerHTML = dropoffs.map(({ o, mo }) => {
+        const shop = BH.lookups.shop(mo.shopId);
+        const items = BHApp.deliveryItems(mo).map((it) => `${it.emoji} ${it.nameSnapshot} ×${it.qty}`).join(" · ");
+        return stopCard(++seq, `🏠 Deliver to customer`, `${o.address} · order ${o.id} · from ${shop.name}`, items,
+          `<button class="btn btn-ok btn-sm" data-go="${o.id}|${mo.shopId}|delivered">Mark delivered</button>`);
       }).join("");
 
       // Completed
-      document.getElementById("emptyCompleted").style.display = delivered.length ? "none" : "";
-      document.getElementById("completed").innerHTML = delivered.map((o) =>
-        `<div class="dash-order"><header><span style="font-size:1.3rem">✅</span>
-          <div><div class="mname" style="font-weight:800">Delivered · ${o.address}</div>
-          <div class="muted" style="font-size:0.82rem">Order ${o.id}</div></div>
-          <span class="status confirmed" style="margin-left:auto">delivered</span></header></div>`).join("");
+      document.getElementById("emptyCompleted").style.display = completed.length ? "none" : "";
+      document.getElementById("completed").innerHTML = completed.map(({ o, mo }) => {
+        const shop = BH.lookups.shop(mo.shopId);
+        return `<div class="dash-order"><header><span style="font-size:1.3rem">✅</span>
+          <div><div class="mname" style="font-weight:800">Delivered · ${shop.name}</div>
+          <div class="muted" style="font-size:0.82rem">Order ${o.id} → ${o.address}</div></div>
+          <span class="status confirmed" style="margin-left:auto">delivered</span></header></div>`;
+      }).join("");
 
-      document.querySelectorAll("[data-pick]").forEach((b) => b.onclick = () => {
-        const [id, shopId] = b.dataset.pick.split("|");
-        BHApp.setPickup(id, shopId, true); BHApp.toast("Picked up"); render();
-      });
-      document.querySelectorAll("[data-deliver]").forEach((b) => b.onclick = () => {
-        BHApp.setDelivered(b.dataset.deliver); BHApp.toast("Delivered — nice work"); render();
+      document.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => {
+        const [id, shopId, status] = b.dataset.go.split("|");
+        BHApp.setMODelivery(id, shopId, status);
+        BHApp.toast(status === "delivered" ? "Delivered — nice work" : "Picked up");
+        render();
       });
     }
 
@@ -155,8 +146,8 @@
 
     document.getElementById("resetBtn").onclick = () => { localStorage.removeItem("bh_orders"); render(); BHApp.toast("Cleared"); };
     document.getElementById("sampleBtn").onclick = () => {
-      const mk = (id, address, mos) => ({ id, placedAt: Date.now(), windowId: "today-pm", address, delivery: "scheduled", merchantOrders: mos });
-      const mo = (shopId, items) => ({ shopId, status: "confirmed", pickedUp: false, items: items.map((it) => ({ fulfillment: "delivery", ...it })) });
+      const mk = (id, address, mos) => ({ id, placedAt: Date.now(), windowId: "today-pm", address, merchantOrders: mos });
+      const mo = (shopId, items) => ({ shopId, status: "confirmed", delivery: "scheduled", items: items.map((it) => ({ fulfillment: "delivery", ...it })) });
       const orders = BHApp.getOrders();
       orders.unshift(
         mk("BH-401", "8 Goode St, Burnt Hills", [
