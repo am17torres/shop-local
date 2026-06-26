@@ -1,0 +1,12 @@
+{
+  "name": "shop-local",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Burnt Hills Local Marketplace — demo + e2e tests",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1"
+  }
+}

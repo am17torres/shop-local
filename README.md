@@ -33,6 +33,7 @@ To run locally: open `site/index.html`, or
 
 | Doc | What's in it |
 | --- | --- |
+| [docs/PERSONAS.md](docs/PERSONAS.md) | Who we serve, their capabilities, and the user stories the e2e suite tests. |
 | [docs/PLAN.md](docs/PLAN.md) | The full build plan: concept, phases, economics, risks. |
 | [docs/DATA_MODEL.md](docs/DATA_MODEL.md) | Entities, key rules, and a concrete Postgres schema (DDL). |
 | [docs/PAYMENT_FLOW.md](docs/PAYMENT_FLOW.md) | The confirm-before-charge Stripe Connect flow, state machine, and timeouts. |
