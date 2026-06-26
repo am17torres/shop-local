@@ -47,11 +47,16 @@ code you add.
 
 ## Checks — must pass before merge
 
-- **Markdown lint:** `npx markdownlint-cli2 "**/*.md"` (config:
-  `.markdownlint.json`). CI runs this on every PR via
-  `.github/workflows/ci.yml`. Run it locally before pushing.
-- As application code lands, extend `.github/workflows/ci.yml` with build,
-  typecheck, and test jobs rather than adding separate workflows.
+- **Markdown lint:** `npx markdownlint-cli2 "**/*.md"` (rules in
+  `.markdownlint.json`; scope in `.markdownlint-cli2.jsonc`). CI runs this on
+  every PR via `.github/workflows/ci.yml`. Run it locally before pushing.
+- **e2e user-story suite:** `npm test` (Playwright). The `e2e` CI job runs the
+  persona user stories in [`tests/`](tests) on every PR. Each test cites a story
+  ID from [`docs/PERSONAS.md`](docs/PERSONAS.md); keep the two in sync — when you
+  add a story or change behavior, update both the spec and the personas doc in
+  the same PR.
+- As application code lands, extend `.github/workflows/ci.yml` with build and
+  typecheck jobs rather than adding separate workflows.
 
 ## When building (Phase 3, not yet started)
 

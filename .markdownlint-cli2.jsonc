@@ -1,0 +1,5 @@
+{
+  // Rules live in .markdownlint.json; this file just scopes which files are linted.
+  "gitignore": true,
+  "ignores": ["node_modules/**", "playwright-report/**", "test-results/**"]
+}
