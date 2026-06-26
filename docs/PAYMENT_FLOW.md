@@ -24,7 +24,7 @@ one PaymentIntent per shop, each on that shop's connected account.
 
 ## State machine (merchant_order)
 
-```
+```text
                  confirm (capture intent)
    authorized ───────────────────────────▶ confirmed
        │
