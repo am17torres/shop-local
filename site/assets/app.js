@@ -108,6 +108,7 @@
       placedAt: Date.now(),
       windowId,
       address: address || "12 Lakehill Rd, Burnt Hills",
+      distanceMi: mockDistanceMi(address || "12 Lakehill Rd, Burnt Hills"),  // snapshot at order time
       merchantOrders: Object.entries(byShop).map(([shopId, items]) => ({
         shopId,
         status: "authorized",     // authorize-and-hold; capture on confirm
@@ -163,12 +164,28 @@
     return mo.status === "confirmed" && deliveryItems(mo).length > 0;
   }
 
+  /* ---- distance-based delivery fee ---- */
+  const DELIVERY_RATE = 1.0; // dollars per mile
+  // Deterministic mock distance from the delivery address (no geocoding in the demo).
+  function mockDistanceMi(address) {
+    const s = String(address || "");
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    return Math.round((0.6 + (h % 880) / 100) * 10) / 10; // ~0.6–9.4 mi, stable per address
+  }
+  function feeForDistance(mi) { return Math.round(mi * DELIVERY_RATE * 100) / 100; }
+  function deliveryDistance(order) {
+    return order.distanceMi != null ? order.distanceMi : mockDistanceMi(order.address);
+  }
+  function deliveryFee(order) { return feeForDistance(deliveryDistance(order)); }
+
   /* expose */
   window.BHApp = {
     money, toast, notImplemented,
     getCart, addToCart, setQty, setFulfillment, cartCount, clearCart, updateCartCount,
     getOrders, placeOrder, setMerchantOrderStatus, moTotal,
     setMODelivery, confirmedMOs, deliveryItems, pickupItems, orderHasDelivery, isDeliverable,
+    DELIVERY_RATE, mockDistanceMi, feeForDistance, deliveryDistance, deliveryFee,
   };
 
   /* keep cart badge + any live order views in sync across tabs */
