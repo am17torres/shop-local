@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your orders — Burnt Hills Local Market</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="demo-banner">🧪 Concept demo. Open the <a href="merchant.html">Merchant Dashboard</a> in another tab and confirm an order — this page updates live.</div>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html"><span>Burnt Hills</span> <span class="dot">●</span> <span>Local Market</span></a>
+      <nav class="nav">
+        <a href="index.html">For Shops</a>
+        <a href="storefront.html">Shop the Demo</a>
+        <a href="merchant.html">Merchant Dashboard</a>
+        <a href="cart.html" class="cart-pill">🛒 Cart <span data-cart-count style="display:none">0</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" style="padding:34px 0 60px">
+    <div class="section-head">
+      <h2>Your orders</h2>
+      <p>Each shop confirms its own items. Your card is only charged for the parts a shop confirms.</p>
+    </div>
+    <div id="orders"></div>
+    <div class="empty" id="empty" style="display:none">
+      <div class="big">📦</div>
+      <p>No orders yet.</p>
+      <a href="storefront.html" class="btn btn-primary">Place a demo order</a>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div>Burnt Hills Local Marketplace — concept demo</div>
+      <div>Sample data only • <a href="https://github.com/am17torres/shop-local">Project on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    const STATUS_COPY = {
+      authorized: "Hold placed · waiting for shop to confirm",
+      confirmed: "Confirmed · card charged · joining delivery loop",
+      rejected: "Rejected · hold released, you weren't charged",
+      expired: "Expired · hold released, you weren't charged",
+    };
+
+    function rollup(order) {
+      const st = order.merchantOrders.map((m) => m.status);
+      if (st.every((s) => s === "confirmed")) return "confirmed";
+      if (st.every((s) => s === "rejected" || s === "expired")) return "rejected";
+      if (st.some((s) => s === "confirmed")) return "partly confirmed";
+      return "pending";
+    }
+
+    function render() {
+      const orders = BHApp.getOrders();
+      document.getElementById("empty").style.display = orders.length ? "none" : "";
+      document.getElementById("orders").innerHTML = orders.map((o) => {
+        const groups = o.merchantOrders.map((mo) => {
+          const shop = BH.lookups.shop(mo.shopId);
+          const items = mo.items.map((it) => `<div class="row"><span>${it.emoji} ${it.nameSnapshot} × ${it.qty}</span><span>${BHApp.money(it.priceSnapshot * it.qty)}</span></div>`).join("");
+          return `<div class="merchant-group">
+            <header>
+              <span style="font-size:1.2rem">${shop.emoji}</span>
+              <span class="mname">${shop.name}</span>
+              <span class="status ${mo.status}" style="margin-left:auto">${mo.status}</span>
+            </header>
+            <div class="items" style="padding:12px 18px">${items}
+              <div class="row total" style="border-top:1px solid var(--line);margin-top:8px;padding-top:10px"><strong>${BHApp.money(BHApp.moTotal(mo))}</strong></div>
+              <p class="muted" style="font-size:0.85rem;margin:8px 0 0">${STATUS_COPY[mo.status]}</p>
+            </div>
+          </div>`;
+        }).join("");
+        return `<div class="card" style="margin-bottom:24px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <strong>Order ${o.id}</strong>
+            <span class="tag">${rollup(o)}</span>
+            <span class="muted" style="margin-left:auto;font-size:0.85rem">${new Date(o.placedAt).toLocaleString()}</span>
+          </div>
+          ${groups}
+        </div>`;
+      }).join("");
+    }
+
+    window.BHRefresh = render;  // live update when merchant acts (storage event)
+    render();
+    setInterval(render, 1500); // also refresh within the same tab
+  </script>
+</body>
+</html>

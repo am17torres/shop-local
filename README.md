@@ -18,6 +18,17 @@ stock"* problem with one searchable storefront for the town.
 4. **Batched same-day delivery** in time windows (order-by cutoff → afternoon /
    evening loop), not on-demand.
 
+## Demo site
+
+An interactive **concept demo** (sample data, no backend) lives in
+[`site/`](site/) and deploys to GitHub Pages. It's aimed at recruiting shop
+owners and shows the whole flow: faceted storefront → single cross-shop cart →
+confirm-before-charge checkout → merchant confirm/reject dashboard → live
+customer order status.
+
+To run locally: open `site/index.html`, or
+`python3 -m http.server -d site 8000` and visit <http://localhost:8000>.
+
 ## Documentation
 
 | Doc | What's in it |

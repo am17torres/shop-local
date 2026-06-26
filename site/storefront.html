@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shop Burnt Hills — the demo storefront</title>
+  <meta name="description" content="Browse sample products from local Burnt Hills shops, with real faceted search." />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="demo-banner">
+    🧪 Concept demo with sample data. Try the search &amp; filters, then add a few things from different shops to one cart.
+  </div>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html"><span>Burnt Hills</span> <span class="dot">●</span> <span>Local Market</span></a>
+      <nav class="nav">
+        <a href="index.html">For Shops</a>
+        <a href="storefront.html" class="active">Shop the Demo</a>
+        <a href="merchant.html">Merchant Dashboard</a>
+        <a href="cart.html" class="cart-pill">🛒 Cart <span data-cart-count style="display:none">0</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" style="padding:34px 0 60px">
+    <div class="section-head">
+      <h2>Everything local, in one place</h2>
+      <p>Search across every shop at once — including their product details, not just names.</p>
+    </div>
+
+    <div class="search-row">
+      <input id="q" type="search" placeholder='Try: "terracotta planter with drainage" or "organic"' />
+      <button class="btn btn-ghost" id="clearBtn">Clear</button>
+    </div>
+
+    <div class="shop-layout">
+      <aside class="facets" id="facets"><!-- facets injected --></aside>
+      <div>
+        <p class="result-meta" id="resultMeta"></p>
+        <div class="grid cols-3" id="results"><!-- products injected --></div>
+        <div class="empty" id="emptyState" style="display:none">
+          <div class="big">🔍</div>
+          <p>No products match those filters.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div>Burnt Hills Local Marketplace — concept demo</div>
+      <div>Sample data only • <a href="https://github.com/am17torres/shop-local">Project on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    /* ---- Faceted search over the mock catalog ---- */
+    const state = { q: "", categories: new Set(), shops: new Set(), inStock: false, maxPrice: 40, features: {} };
+
+    // Feature facets we expose (category-scoped in spirit; here we surface the useful ones).
+    const FEATURE_FACETS = [
+      { key: "material", label: "Material", type: "enum" },
+      { key: "organic", label: "Organic only", type: "boolean" },
+      { key: "drainage", label: "Has drainage hole", type: "boolean" },
+    ];
+
+    // Flatten feature values into a searchable string (mirrors the tsvector idea).
+    function searchBlob(p) {
+      const feat = Object.values(p.features).join(" ");
+      return [p.name, p.brand, p.desc, feat].join(" ").toLowerCase();
+    }
+
+    function matches(p) {
+      if (state.q && !searchBlob(p).includes(state.q.toLowerCase())) return false;
+      if (state.categories.size && !state.categories.has(p.category)) return false;
+      if (state.shops.size && !state.shops.has(p.shopId)) return false;
+      if (state.inStock && !p.inStock) return false;
+      if (p.price > state.maxPrice) return false;
+      for (const [key, val] of Object.entries(state.features)) {
+        if (val === true) { if (p.features[key] !== true) return false; }
+        else if (val instanceof Set && val.size) { if (!val.has(p.features[key])) return false; }
+      }
+      return true;
+    }
+
+    function renderFacets() {
+      const enumVals = (key) => [...new Set(BH.products.map((p) => p.features[key]).filter((v) => typeof v === "string"))];
+      let html = "";
+
+      html += `<div class="facet-group"><h4>Category</h4>` +
+        BH.categories.map((c) =>
+          `<label class="facet-opt"><input type="checkbox" data-cat="${c.id}" ${state.categories.has(c.id) ? "checked" : ""}/> ${c.name}</label>`
+        ).join("") + `</div>`;
+
+      html += `<div class="facet-group"><h4>Shop</h4>` +
+        BH.shops.map((s) =>
+          `<label class="facet-opt"><input type="checkbox" data-shop="${s.id}" ${state.shops.has(s.id) ? "checked" : ""}/> ${s.emoji} ${s.name}</label>`
+        ).join("") + `</div>`;
+
+      FEATURE_FACETS.forEach((f) => {
+        if (f.type === "boolean") {
+          html += `<div class="facet-group"><label class="facet-opt"><input type="checkbox" data-feat-bool="${f.key}" ${state.features[f.key] === true ? "checked" : ""}/> ${f.label}</label></div>`;
+        } else {
+          const vals = enumVals(f.key);
+          if (!vals.length) return;
+          html += `<div class="facet-group"><h4>${f.label}</h4>` +
+            vals.map((v) => {
+              const sel = state.features[f.key] instanceof Set && state.features[f.key].has(v);
+              return `<label class="facet-opt"><input type="checkbox" data-feat-enum="${f.key}" value="${v}" ${sel ? "checked" : ""}/> ${v}</label>`;
+            }).join("") + `</div>`;
+        }
+      });
+
+      html += `<div class="facet-group"><h4>Max price: <span id="priceVal">$${state.maxPrice}</span></h4>
+        <input type="range" min="4" max="40" value="${state.maxPrice}" id="priceRange" style="width:100%"/></div>`;
+
+      html += `<div class="facet-group"><label class="facet-opt"><input type="checkbox" id="inStock" ${state.inStock ? "checked" : ""}/> In stock only</label></div>`;
+
+      document.getElementById("facets").innerHTML = html;
+      wireFacets();
+    }
+
+    function wireFacets() {
+      document.querySelectorAll("[data-cat]").forEach((el) => el.onchange = () => { toggle(state.categories, el.dataset.cat, el.checked); render(); });
+      document.querySelectorAll("[data-shop]").forEach((el) => el.onchange = () => { toggle(state.shops, el.dataset.shop, el.checked); render(); });
+      document.querySelectorAll("[data-feat-bool]").forEach((el) => el.onchange = () => { state.features[el.dataset.featBool] = el.checked ? true : undefined; render(); });
+      document.querySelectorAll("[data-feat-enum]").forEach((el) => el.onchange = () => {
+        const k = el.dataset.featEnum;
+        if (!(state.features[k] instanceof Set)) state.features[k] = new Set();
+        toggle(state.features[k], el.value, el.checked);
+        render();
+      });
+      const pr = document.getElementById("priceRange");
+      pr.oninput = () => { state.maxPrice = +pr.value; document.getElementById("priceVal").textContent = "$" + pr.value; render(false); };
+      document.getElementById("inStock").onchange = (e) => { state.inStock = e.target.checked; render(); };
+    }
+
+    function toggle(set, val, on) { on ? set.add(val) : set.delete(val); }
+
+    function render(rebuildFacets) {
+      if (rebuildFacets !== false) { /* keep facets as-is during slider drag */ }
+      const list = BH.products.filter(matches);
+      const wrap = document.getElementById("results");
+      document.getElementById("emptyState").style.display = list.length ? "none" : "";
+      document.getElementById("resultMeta").textContent =
+        `${list.length} ${list.length === 1 ? "result" : "results"} across ${new Set(list.map((p) => p.shopId)).size} shop(s)`;
+      wrap.innerHTML = list.map(productCard).join("");
+      document.querySelectorAll("[data-add]").forEach((b) => b.onclick = () => {
+        BHApp.addToCart(b.dataset.add, 1);
+        BHApp.toast("Added to cart");
+      });
+    }
+
+    function productCard(p) {
+      const shop = BH.lookups.shop(p.shopId);
+      const featBits = [];
+      if (p.features.material) featBits.push(p.features.material);
+      if (p.features.diameter) featBits.push(p.features.diameter + '"');
+      if (p.features.size) featBits.push(p.features.size);
+      if (p.features.organic) featBits.push("organic");
+      return `<div class="product-card">
+        <div class="thumb">${p.emoji}</div>
+        <div class="body">
+          <div class="shopname">${shop.emoji} ${shop.name}</div>
+          <div class="pname">${p.name}</div>
+          <div class="pill-row">${featBits.map((b) => `<span class="tag">${b}</span>`).join("")}</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+            <span class="price">${BHApp.money(p.price)}</span>
+            ${p.inStock ? "" : '<span class="tag oos">Out of stock</span>'}
+          </div>
+          ${p.inStock
+            ? `<button class="btn btn-primary btn-sm" data-add="${p.id}">Add to cart</button>`
+            : `<button class="btn btn-ghost btn-sm" disabled>Unavailable</button>`}
+        </div>
+      </div>`;
+    }
+
+    document.getElementById("q").oninput = (e) => { state.q = e.target.value; render(false); };
+    document.getElementById("clearBtn").onclick = () => {
+      Object.assign(state, { q: "", categories: new Set(), shops: new Set(), inStock: false, maxPrice: 40, features: {} });
+      document.getElementById("q").value = "";
+      renderFacets(); render();
+    };
+
+    renderFacets();
+    render();
+  </script>
+</body>
+</html>
