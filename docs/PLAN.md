@@ -40,6 +40,9 @@ Two layers from one dataset (full detail in [SEARCH.md](SEARCH.md)):
 ### Phase 1 — Validate & recruit (Weeks 1–4)
 
 - Identify 8–15 family-owned shops with sellable goods.
+- Collect interest via the merchant sign-up form (`index.html#join`) and driver
+  sign-up form (`drive.html#apply`); both feed a Google Sheet via Apps Script
+  (see [PARTNER_INTAKE.md](PARTNER_INTAKE.md)). ✅ live on demo site
 - Interview owners; lock 3–4 diverse launch partners.
 - Define the delivery zone by ZIP / radius.
 - Ask each owner **"what do you ring up sales on?"** to sort them into inventory
