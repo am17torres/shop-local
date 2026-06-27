@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pricing — Burnt Hills Local Marketplace</title>
+  <meta name="description" content="Simple, transparent fees for Burnt Hills shop owners and shoppers. No monthly subscription, no setup cost — just a small cut per order." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <style>
+    /* ---- Pricing page extras ---- */
+    .price-hero { padding: 70px 0 50px; background:
+      radial-gradient(1200px 400px at 80% -10%, #f6e3d8 0, transparent 60%),
+      radial-gradient(900px 380px at 0% 0%, #e7efe4 0, transparent 55%); }
+
+    .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 40px; }
+
+    .plan-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .plan-card.featured { border-color: var(--brand); }
+
+    .plan-header {
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .plan-card.featured .plan-header { background: #fdf4ef; }
+
+    .plan-label {
+      font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--muted); display: block; margin-bottom: 6px;
+    }
+    .plan-card.featured .plan-label { color: var(--brand-dark); }
+
+    .plan-name { font-size: 1.45rem; font-weight: 800; margin: 0 0 4px; }
+    .plan-sub { color: var(--muted); font-size: 0.95rem; margin: 0; }
+
+    .plan-price {
+      display: flex; align-items: baseline; gap: 6px;
+      margin: 18px 0 0;
+    }
+    .plan-amount { font-size: 3rem; font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
+    .plan-unit { color: var(--muted); font-size: 0.92rem; }
+
+    .plan-body { padding: 24px 28px; }
+
+    .plan-features { list-style: none; margin: 0; padding: 0; }
+    .plan-features li {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 8px 0; font-size: 0.97rem; border-bottom: 1px solid var(--line);
+    }
+    .plan-features li:last-child { border-bottom: 0; }
+    .plan-features .check { color: var(--ok); font-weight: 800; flex-shrink: 0; }
+    .plan-features .label { color: var(--ink); }
+    .plan-features .sub { display: block; color: var(--muted); font-size: 0.85rem; }
+
+    .plan-cta { margin-top: 24px; display: flex; flex-direction: column; gap: 10px; }
+
+    /* ---- math row ---- */
+    .math-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; }
+    .math-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.95rem; }
+    .math-table td { padding: 9px 12px; }
+    .math-table td:last-child { text-align: right; font-weight: 700; }
+    .math-table tr:not(:last-child) td { border-bottom: 1px solid var(--line); }
+    .math-table .total-row td { font-size: 1.1rem; font-weight: 800; background: #f7f1e8; }
+    .math-table .deduct-row td:last-child { color: var(--danger); }
+    .math-table .earn-row td { color: var(--ok); }
+
+    /* ---- Tier table ---- */
+    .tier-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 16px 0 20px; }
+    .tier-table th { text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 6px 10px; border-bottom: 1px solid var(--line); }
+    .tier-table th:not(:first-child) { text-align: right; }
+    .tier-table td { padding: 9px 10px; border-bottom: 1px solid var(--line); color: var(--ink); }
+    .tier-table td:not(:first-child) { text-align: right; font-weight: 700; }
+    .tier-table tr:last-child td { border-bottom: 0; }
+    .tier-table .tier-highlight td { background: #fdf4ef; }
+    .tier-cap { color: var(--ok); }
+    .tier-num { display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; border-radius: 999px; background: var(--line);
+      font-size: 0.75rem; font-weight: 800; color: var(--muted); margin-right: 6px; }
+    .tier-highlight .tier-num { background: var(--brand); color: #fff; }
+
+    /* ---- Interactive calculator ---- */
+    .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+    .calc-controls { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; }
+
+    .calc-amount-display { font-size: 2.6rem; font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
+    .calc-label { font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); display: block; margin-bottom: 8px; }
+
+    .calc-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 6px;
+      border-radius: 999px; background: var(--line); outline: none; margin: 18px 0 4px; }
+    .calc-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none;
+      width: 24px; height: 24px; border-radius: 999px; background: var(--brand);
+      border: 3px solid #fff; box-shadow: var(--shadow); cursor: pointer; }
+    .calc-slider::-moz-range-thumb { width: 24px; height: 24px; border-radius: 999px;
+      background: var(--brand); border: 3px solid #fff; box-shadow: var(--shadow); cursor: pointer; }
+    .calc-range-ends { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.8rem; }
+
+    .calc-tiers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; }
+    .calc-tier-btn { font: inherit; cursor: pointer; text-align: center; padding: 10px 6px;
+      border-radius: 12px; border: 1px solid var(--line); background: #fff; color: var(--muted);
+      transition: all 0.12s ease; }
+    .calc-tier-btn:hover { border-color: var(--brand); }
+    .calc-tier-btn.on { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .calc-tier-btn .t-name { display: block; font-weight: 800; font-size: 0.92rem; }
+    .calc-tier-btn .t-pct { display: block; font-size: 0.78rem; opacity: 0.85; }
+    .calc-tier-note { color: var(--muted); font-size: 0.85rem; margin: 16px 0 0; }
+
+    /* ---- FAQ ---- */
+    .faq-item { border-bottom: 1px solid var(--line); padding: 20px 0; }
+    .faq-item:first-child { padding-top: 0; }
+    .faq-q { font-weight: 800; font-size: 1.05rem; margin: 0 0 8px; }
+    .faq-a { color: var(--muted); margin: 0; font-size: 0.97rem; line-height: 1.6; }
+
+    @media (max-width: 640px) {
+      .plan-grid { grid-template-columns: 1fr; }
+      .calc-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-banner">
+    🧪 This is an interactive <strong>concept demo</strong> with sample data — pricing below is indicative, not final.
+    <a href="storefront.html">See what customers would see →</a>
+  </div>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html"><span>Burnt Hills</span> <span class="dot">●</span> <span>Local Market</span></a>
+      <nav class="nav">
+        <a href="index.html">For Shops</a>
+        <a href="pricing.html" class="active">Pricing</a>
+        <a href="storefront.html">Shop the Demo</a>
+        <a href="merchant.html">Merchant Dashboard</a>
+        <a href="driver.html">Driver Route</a>
+        <a href="#join" class="cart-pill">Become a Partner</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="price-hero">
+      <div class="container">
+        <span class="eyebrow">Simple, honest fees</span>
+        <h1>You only pay when an order ships.</h1>
+        <p class="lead">
+          No monthly subscription. No setup fee. No charge if a customer cancels
+          or you reject an order. Just a small cut when a sale goes through.
+        </p>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div class="plan-grid">
+
+          <!-- Merchant plan -->
+          <div class="plan-card featured">
+            <div class="plan-header">
+              <span class="plan-label">For shop owners</span>
+              <div class="plan-name">Merchant</div>
+              <p class="plan-sub">Per confirmed order · scales with your annual sales</p>
+              <div class="plan-price">
+                <span class="plan-amount">1–4%</span>
+                <span class="plan-unit">of order subtotal</span>
+              </div>
+            </div>
+            <div class="plan-body">
+              <table class="tier-table">
+                <thead>
+                  <tr>
+                    <th>Annual revenue through us</th>
+                    <th>Fee</th>
+                    <th>Annual cap</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="tier-highlight">
+                    <td><span class="tier-num">1</span>Up to $9,999</td>
+                    <td>1%</td>
+                    <td class="tier-cap">$100</td>
+                  </tr>
+                  <tr>
+                    <td><span class="tier-num">2</span>Up to $99,999</td>
+                    <td>2%</td>
+                    <td class="tier-cap">$2,000</td>
+                  </tr>
+                  <tr>
+                    <td><span class="tier-num">3</span>Up to $999,999</td>
+                    <td>3%</td>
+                    <td class="tier-cap">$30,000</td>
+                  </tr>
+                  <tr>
+                    <td><span class="tier-num">4</span>Up to $9,999,999</td>
+                    <td>4%</td>
+                    <td class="tier-cap">$400,000</td>
+                  </tr>
+                </tbody>
+              </table>
+              <ul class="plan-features">
+                <li>
+                  <span class="check">✓</span>
+                  <span class="label">
+                    No monthly fee
+                    <span class="sub">You pay nothing until customers buy.</span>
+                  </span>
+                </li>
+                <li>
+                  <span class="check">✓</span>
+                  <span class="label">
+                    We build and maintain your catalog
+                    <span class="sub">Send us a list, spreadsheet, or let us photograph the shelf.</span>
+                  </span>
+                </li>
+                <li>
+                  <span class="check">✓</span>
+                  <span class="label">
+                    No new software to learn
+                    <span class="sub">Keep your register. We sync, scrape, or just ask you to confirm.</span>
+                  </span>
+                </li>
+                <li>
+                  <span class="check">✓</span>
+                  <span class="label">
+                    Confirm-before-charge protection
+                    <span class="sub">Your card is never charged until you tap Confirm. You can't oversell.</span>
+                  </span>
+                </li>
+                <li>
+                  <span class="check">✓</span>
+                  <span class="label">
+                    Stripe Connect payout
+                    <span class="sub">Your share lands in your bank account directly. No invoices to chase.</span>
+                  </span>
+                </li>
+                <li>
+                  <span class="check">✓</span>
+                  <span class="label">
+                    Order alerts via text
+                    <span class="sub">SMS ping on every new order so you never miss a confirmation window.</span>
+                  </span>
+                </li>
+              </ul>
+              <div class="plan-cta">
+                <a href="index.html#join" class="btn btn-primary">Become a launch partner</a>
+                <a href="merchant.html" class="btn btn-ghost">See the merchant dashboard →</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer plan -->
+          <div class="plan-card">
+            <div class="plan-header">
+              <span class="plan-label">For shoppers</span>
+              <div class="plan-name">Customer</div>
+              <p class="plan-sub">Delivery priced by distance · or pick up free</p>
+              <div class="plan-price">
+                <span class="plan-amount">$1</span>
+                <span class="plan-unit">per mile, per shop</span>
+              </div>
+            </div>
+            <div class="plan-body">
+              <ul class="plan-features">
+                <li>
+                  <span class="check">✓</span>
+                  <span class="label">
+                    One cart for the whole town
+                    <span class="sub">Buy from five shops in a single checkout. Each shop's delivery is priced by its own distance to you.</span>
+                  </span>
+                </li>
+                <li>
+                  <span class="check">✓</span>
+                  <span class="label">
+                    No membership required
+                    <span class="sub">No subscription, no minimum order, no account needed to browse.</span>
+                  </span>
+                </li>
+                <li>
+                  <span class="check">✓</span>
+                  <span class="label">
+                    Same-day delivery
+                    <span class="sub">Order before the afternoon cutoff; delivery runs that day.</span>
+                  </span>
+                </li>
+                <li>
+                  <span class="check">✓</span>
+                  <span class="label">
+                    Free pickup always available
+                    <span class="sub">Skip the fee entirely — pick up in store, free. Mix delivery and pickup in one cart.</span>
+                  </span>
+                </li>
+                <li>
+                  <span class="check">✓</span>
+                  <span class="label">
+                    No charge if an order isn't confirmed
+                    <span class="sub">Card is authorized, not charged, until the shop confirms stock.</span>
+                  </span>
+                </li>
+                <li>
+                  <span class="check">✓</span>
+                  <span class="label">
+                    SMS order updates
+                    <span class="sub">Text confirmation and a delivery ETA so you know when to be home.</span>
+                  </span>
+                </li>
+              </ul>
+              <div class="plan-cta">
+                <a href="storefront.html" class="btn btn-primary">Browse the storefront</a>
+                <a href="cart.html" class="btn btn-ghost">See a sample cart →</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="block alt">
+      <div class="container">
+        <div class="section-head">
+          <h2>See what any order earns your shop</h2>
+          <p>Drag the slider and pick your tier — the math updates live. Stripe processing is the same regardless of tier.</p>
+        </div>
+        <div class="calc-grid">
+          <div class="calc-controls">
+            <span class="calc-label">Order subtotal</span>
+            <div class="calc-amount-display" id="calc-amount">$50</div>
+            <input type="range" class="calc-slider" id="calc-slider" min="5" max="500" step="5" value="50" aria-label="Order subtotal" />
+            <div class="calc-range-ends"><span>$5</span><span>$500</span></div>
+
+            <span class="calc-label" style="margin-top: 24px">Your tier</span>
+            <div class="calc-tiers" id="calc-tiers">
+              <button type="button" class="calc-tier-btn on" data-tier="1" data-pct="1">
+                <span class="t-name">Tier 1</span><span class="t-pct">1%</span>
+              </button>
+              <button type="button" class="calc-tier-btn" data-tier="2" data-pct="2">
+                <span class="t-name">Tier 2</span><span class="t-pct">2%</span>
+              </button>
+              <button type="button" class="calc-tier-btn" data-tier="3" data-pct="3">
+                <span class="t-name">Tier 3</span><span class="t-pct">3%</span>
+              </button>
+              <button type="button" class="calc-tier-btn" data-tier="4" data-pct="4">
+                <span class="t-name">Tier 4</span><span class="t-pct">4%</span>
+              </button>
+            </div>
+            <p class="calc-tier-note" id="calc-tier-note">
+              Tier 1 — annual revenue through us under $9,999. Most launch partners start here.
+            </p>
+          </div>
+
+          <div class="math-card">
+            <h3 style="margin: 0 0 4px">Your breakdown</h3>
+            <p class="muted" style="margin: 0; font-size: 0.9rem">On a <span id="calc-sub-label">$50.00</span> order at <span id="calc-pct-label">1%</span></p>
+            <table class="math-table">
+              <tr>
+                <td>Customer pays (subtotal)</td>
+                <td id="calc-subtotal">$50.00</td>
+              </tr>
+              <tr class="deduct-row">
+                <td>Platform fee (<span id="calc-fee-pct">1%</span>)</td>
+                <td id="calc-platform-fee">−$0.50</td>
+              </tr>
+              <tr class="deduct-row">
+                <td>Stripe processing (~2.9% + 30¢)</td>
+                <td id="calc-stripe-fee">−$1.75</td>
+              </tr>
+              <tr class="earn-row total-row">
+                <td><strong>You receive</strong></td>
+                <td><strong id="calc-net">$47.75</strong></td>
+              </tr>
+            </table>
+            <p class="muted" style="margin: 14px 0 0; font-size: 0.85rem">
+              Delivery ($1/mile from your shop to the customer) is billed to the customer separately and goes entirely to the driver — never deducted from your share. In-store pickup is free.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start;">
+          <div>
+            <div class="section-head">
+              <h2>Frequently asked questions</h2>
+              <p>The stuff shop owners usually ask before signing on.</p>
+            </div>
+
+            <div class="faq-item">
+              <p class="faq-q">What if a customer cancels or I reject an order?</p>
+              <p class="faq-a">You pay nothing. The platform fee only applies to orders that clear your confirmation step and are fulfilled. If you reject, the customer's hold is released and nobody is charged.</p>
+            </div>
+
+            <div class="faq-item">
+              <p class="faq-q">When do I get paid?</p>
+              <p class="faq-a">Stripe Connect pays out to your bank account on a rolling basis — typically 2 business days after a confirmed order. You'll get a Stripe dashboard to track every payout.</p>
+            </div>
+
+            <div class="faq-item">
+              <p class="faq-q">Are there any setup or monthly fees?</p>
+              <p class="faq-a">None. We cover the cost of building your catalog, setting up your listing, and keeping things current. The only thing we take is the per-order percentage on sales that ship.</p>
+            </div>
+
+            <div class="faq-item">
+              <p class="faq-q">How is my tier decided?</p>
+              <p class="faq-a">By how much revenue you've earned through the platform so far this calendar year — not your shop's overall sales. You start every year in Tier 1 at 1%, and only move up a tier once your cumulative sales through us cross each threshold. The tier resets every January 1st.</p>
+            </div>
+
+            <div class="faq-item">
+              <p class="faq-q">Is there a ceiling on what I'll pay?</p>
+              <p class="faq-a">Yes. Each tier has a hard annual cap — $100 at Tier 1, $2,000 at Tier 2, $30,000 at Tier 3, $400,000 at Tier 4. Once you hit the cap for your tier, you pay no more platform fees that year until you cross into the next tier.</p>
+            </div>
+
+            <div class="faq-item">
+              <p class="faq-q">Does the delivery fee affect what I earn?</p>
+              <p class="faq-a">No. Delivery is billed to the customer at $1 per mile from your shop to their address, on top of the order subtotal, and goes directly to the driver. Your payout is calculated only on the subtotal — and customers who pick up in store pay no delivery fee at all.</p>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-head">
+              <h2>Compare to the alternatives</h2>
+              <p>What other platforms charge for similar reach.</p>
+            </div>
+            <div class="card" style="padding: 0; overflow: hidden;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                <thead>
+                  <tr style="background: #f7f1e8;">
+                    <th style="padding: 12px 16px; text-align: left; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);">Platform</th>
+                    <th style="padding: 12px 16px; text-align: right; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);">Monthly</th>
+                    <th style="padding: 12px 16px; text-align: right; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);">Per order</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-top: 1px solid var(--line);">
+                    <td style="padding: 12px 16px; font-weight: 700; color: var(--brand-dark);">Burnt Hills Market</td>
+                    <td style="padding: 12px 16px; text-align: right; color: var(--ok); font-weight: 700;">$0</td>
+                    <td style="padding: 12px 16px; text-align: right; font-weight: 700;">1–4%, capped</td>
+                  </tr>
+                  <tr style="border-top: 1px solid var(--line); background: var(--bg);">
+                    <td style="padding: 12px 16px;">Etsy</td>
+                    <td style="padding: 12px 16px; text-align: right; color: var(--muted);">$0</td>
+                    <td style="padding: 12px 16px; text-align: right; color: var(--muted);">6.5% + listing fee</td>
+                  </tr>
+                  <tr style="border-top: 1px solid var(--line);">
+                    <td style="padding: 12px 16px;">Shopify Basic</td>
+                    <td style="padding: 12px 16px; text-align: right; color: var(--muted);">$39/mo</td>
+                    <td style="padding: 12px 16px; text-align: right; color: var(--muted);">2% + Stripe</td>
+                  </tr>
+                  <tr style="border-top: 1px solid var(--line); background: var(--bg);">
+                    <td style="padding: 12px 16px;">DoorDash / Instacart</td>
+                    <td style="padding: 12px 16px; text-align: right; color: var(--muted);">varies</td>
+                    <td style="padding: 12px 16px; text-align: right; color: var(--muted);">15–30%</td>
+                  </tr>
+                  <tr style="border-top: 1px solid var(--line);">
+                    <td style="padding: 12px 16px;">Square Online</td>
+                    <td style="padding: 12px 16px; text-align: right; color: var(--muted);">$0–$79</td>
+                    <td style="padding: 12px 16px; text-align: right; color: var(--muted);">2.9% + 30¢</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="muted" style="padding: 10px 16px; margin: 0; font-size: 0.8rem; border-top: 1px solid var(--line);">
+                Delivery platforms keep 15–30% and manage their own catalog. Shopify gives you tools but sends no customers. We send local customers and keep the upfront cost at zero.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block alt" id="join">
+      <div class="container">
+        <div class="section-head">
+          <h2>Ready to list your shop?</h2>
+          <p>We're locking in 3–4 launch partners. Tell us about your shop and we'll follow up within a day.</p>
+        </div>
+        <div class="split">
+          <form class="card" onsubmit="event.preventDefault(); BHApp.notImplemented('Partner sign-up');">
+            <div class="field">
+              <label for="shop">Shop name</label>
+              <input id="shop" type="text" placeholder="e.g. Hillside Pottery" />
+            </div>
+            <div class="field">
+              <label for="owner">Your name</label>
+              <input id="owner" type="text" placeholder="Owner / manager" />
+            </div>
+            <div class="field">
+              <label for="ring">What do you ring up sales on today?</label>
+              <select id="ring">
+                <option>Square / Shopify / Clover / Lightspeed</option>
+                <option>A system, but no easy export</option>
+                <option>Pen &amp; paper / cash register</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" type="submit" style="width:100%">Request an intro call</button>
+            <p class="muted center" style="margin:12px 0 0; font-size:0.85rem">Demo form — submitting shows a "not yet implemented" note.</p>
+          </form>
+          <div class="summary">
+            <h3 style="margin-top:0">What it costs to start</h3>
+            <p class="muted">Honestly, nothing upfront:</p>
+            <div class="summary-list">
+              <div class="row"><span>Setup fee</span><strong>$0</strong></div>
+              <div class="row"><span>Monthly fee</span><strong>$0</strong></div>
+              <div class="row"><span>Catalog build</span><strong>We do it</strong></div>
+              <div class="row"><span>Per fulfilled order</span><strong>1–4% of subtotal</strong></div>
+              <div class="row"><span>Starting tier</span><strong>1% (capped at $100/yr)</strong></div>
+              <div class="row total"><span>Charge if order rejected</span><strong>None</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div>Burnt Hills Local Marketplace — concept demo</div>
+      <div>Sample data only • <a href="https://github.com/am17torres/shop-local">Project on GitHub</a></div>
+    </div>
+  </footer>
+
+  <div id="toast"></div>
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    /* Interactive earnings calculator. Mirrors the per-order math:
+       net = subtotal − platform fee (tier %) − Stripe (~2.9% + 30¢). */
+    (function () {
+      var TIER_NOTES = {
+        1: "Tier 1 — annual revenue through us under $9,999. Most launch partners start here.",
+        2: "Tier 2 — annual revenue through us $10,000–$99,999.",
+        3: "Tier 3 — annual revenue through us $100,000–$999,999.",
+        4: "Tier 4 — annual revenue through us $1,000,000–$9,999,999."
+      };
+      var slider = document.getElementById("calc-slider");
+      var tiers = document.getElementById("calc-tiers");
+      var pct = 1;
+
+      var money = function (n) { return "$" + n.toFixed(2); };
+
+      function render() {
+        var subtotal = parseFloat(slider.value);
+        var platformFee = subtotal * (pct / 100);
+        var stripeFee = subtotal * 0.029 + 0.30;
+        var net = subtotal - platformFee - stripeFee;
+
+        document.getElementById("calc-amount").textContent = "$" + subtotal;
+        document.getElementById("calc-sub-label").textContent = money(subtotal);
+        document.getElementById("calc-pct-label").textContent = pct + "%";
+        document.getElementById("calc-subtotal").textContent = money(subtotal);
+        document.getElementById("calc-fee-pct").textContent = pct + "%";
+        document.getElementById("calc-platform-fee").textContent = "−" + money(platformFee);
+        document.getElementById("calc-stripe-fee").textContent = "−" + money(stripeFee);
+        document.getElementById("calc-net").textContent = money(net);
+        document.getElementById("calc-tier-note").textContent = TIER_NOTES[pct];
+      }
+
+      slider.addEventListener("input", render);
+      tiers.addEventListener("click", function (e) {
+        var btn = e.target.closest(".calc-tier-btn");
+        if (!btn) return;
+        pct = parseInt(btn.dataset.pct, 10);
+        tiers.querySelectorAll(".calc-tier-btn").forEach(function (b) {
+          b.classList.toggle("on", b === btn);
+        });
+        render();
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

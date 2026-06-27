@@ -49,8 +49,20 @@ Two layers from one dataset (full detail in [SEARCH.md](SEARCH.md)):
 
 - Finalize delivery batching windows.
 - Driver sourcing: 1099 contract / courier partner / hybrid.
-- Flat delivery fee ($5–8).
-- Platform fee (~5–10%).
+- Distance-based delivery fee: $1/mile from each store to the destination,
+  priced per store sub-order (each store sits its own distance from the
+  customer). In-store pickup is free.
+- Platform fee: revenue-tiered, charged on each confirmed order's subtotal.
+  Tier is set by cumulative revenue through the platform per calendar year
+  (resets Jan 1), with a hard annual fee cap per tier:
+
+  | Tier | Max annual revenue | Fee | Annual fee cap |
+  | --- | --- | --- | --- |
+  | 1 | $9,999 | 1% | $100 |
+  | 2 | $99,999 | 2% | $2,000 |
+  | 3 | $999,999 | 3% | $30,000 |
+  | 4 | $9,999,999 | 4% | $400,000 |
+
 - Stripe Connect payout split.
 
 ### Phase 3 — Build (Weeks 4–12)
