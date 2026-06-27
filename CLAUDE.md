@@ -9,7 +9,9 @@ family-owned shops list inventory, customers shop across all of them in one
 cart, and a batched local driver service delivers same-day. The project is
 **AI-managed**: agents do the building, watch PRs, and keep CI green.
 
-Status: **planning / pre-build.** The repo is currently documentation only.
+Status: **Phase 1 — Validate & recruit.** The concept demo is live at
+<https://am17torres.github.io/shop-local/>; merchant and driver intake forms
+are collecting real sign-ups. Phase 3 (production build) has not started.
 
 ## Read these first
 

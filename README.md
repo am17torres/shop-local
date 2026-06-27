@@ -20,11 +20,15 @@ stock"* problem with one searchable storefront for the town.
 
 ## Demo site
 
-An interactive **concept demo** (sample data, no backend) lives in
-[`site/`](site/) and deploys to GitHub Pages. It's aimed at recruiting shop
-owners and shows the whole flow: faceted storefront → single cross-shop cart →
-confirm-before-charge checkout → merchant confirm/reject dashboard → live
-customer order status.
+An interactive **concept demo** lives in [`site/`](site/) and deploys to
+GitHub Pages at <https://am17torres.github.io/shop-local/>. It's aimed at
+recruiting shop owners and shows the whole flow: faceted storefront → single
+cross-shop cart → confirm-before-charge checkout → merchant confirm/reject
+dashboard → live customer order status → driver route view.
+
+The storefront uses sample data and localStorage (no production backend yet).
+The **merchant and driver sign-up forms are live** — submissions go to a real
+Google Sheet via Apps Script (see [docs/PARTNER_INTAKE.md](docs/PARTNER_INTAKE.md)).
 
 To run locally: open `site/index.html`, or
 `python3 -m http.server -d site 8000` and visit <http://localhost:8000>.
@@ -43,7 +47,10 @@ To run locally: open `site/index.html`, or
 
 ## Status
 
-Planning / pre-build. The MVP scope and phasing live in
-[docs/PLAN.md](docs/PLAN.md#phases). The economics are clear-eyed: at low volume,
-fees won't cover delivery — early delivery is **subsidized community
-infrastructure**, and unit economics only improve with route density.
+**Phase 1 — Validate & recruit.** The concept demo is live and merchant/driver
+intake forms are collecting real sign-ups. Phase 3 (production build) has not
+started — the MVP scope and phasing live in [docs/PLAN.md](docs/PLAN.md#phases).
+
+The economics are clear-eyed: at low volume, fees won't cover delivery — early
+delivery is **subsidized community infrastructure**, and unit economics only
+improve with route density.
