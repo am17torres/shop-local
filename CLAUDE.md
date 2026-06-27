@@ -19,6 +19,7 @@ Status: **planning / pre-build.** The repo is currently documentation only.
 - [`docs/PAYMENT_FLOW.md`](docs/PAYMENT_FLOW.md) — confirm-before-charge flow.
 - [`docs/SEARCH.md`](docs/SEARCH.md) — full-text + faceted feature search.
 - [`docs/INVENTORY_MODEL.md`](docs/INVENTORY_MODEL.md) — the three merchant tiers.
+- [`docs/PARTNER_INTAKE.md`](docs/PARTNER_INTAKE.md) — merchant/driver sign-up forms, Apps Script backend, anti-spam layers.
 
 ## Locked decisions — do not relitigate without explicit sign-off
 

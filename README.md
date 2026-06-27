@@ -39,6 +39,7 @@ To run locally: open `site/index.html`, or
 | [docs/PAYMENT_FLOW.md](docs/PAYMENT_FLOW.md) | The confirm-before-charge Stripe Connect flow, state machine, and timeouts. |
 | [docs/SEARCH.md](docs/SEARCH.md) | Full-text + typed faceted feature search design. |
 | [docs/INVENTORY_MODEL.md](docs/INVENTORY_MODEL.md) | The three merchant inventory tiers and how they drive behavior. |
+| [docs/PARTNER_INTAKE.md](docs/PARTNER_INTAKE.md) | Merchant and driver sign-up forms: how submissions are collected, stored, and protected from spam. |
 
 ## Status
 
