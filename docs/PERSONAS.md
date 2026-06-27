@@ -32,7 +32,7 @@ receive them, and know what's happening with the order.
 | C3 | As a shopper, I can free-text search and have it match product attributes, not just names (e.g. "terracotta", "maple"). | ✅ demo |
 | C4 | As a shopper, I can put items from multiple shops into one cart. | ✅ demo |
 | C5 | As a shopper, I can choose **delivery** or **pick-up in store** per item. | ✅ demo |
-| C6 | As a shopper, I see a distance-based delivery fee ($1/mi) that updates with my address, and pay none on pickup-only carts. | ✅ demo |
+| C6 | As a shopper, I see a **per-store** distance-based delivery fee ($1/mi from each shop to my address) that updates with my address, and pay none on pickup items. | ✅ demo |
 | C7 | As a shopper, I can check out and have my card **authorized, not charged**, until each shop confirms. | ✅ demo |
 | C8 | As a shopper, I can track each shop's part of my order independently (authorized → confirmed; delivery scheduled → out → delivered; pickup ready). | ✅ demo |
 | C9 | As a shopper, I receive SMS/email updates as my order changes. | 🟡 planned |
@@ -70,7 +70,7 @@ clear day-list and to know the trip and the pay.
 | D1 | As a driver, I see a batched day-list of pickups (grouped by shop) and drop-offs. | ✅ demo |
 | D2 | As a driver, each confirmed store sub-order is an independent stop I can advance on its own. | ✅ demo |
 | D3 | As a driver, I can mark a stop **picked up** then **delivered**, and the customer sees the change. | ✅ demo |
-| D4 | As a driver, I see the **distance and delivery fee** per drop-off and the day's totals. | ✅ demo |
+| D4 | As a driver, I see the **distance and delivery fee** per drop-off (each store priced on its own store→address distance) and the day's totals. | ✅ demo |
 | D5 | As a driver, pick-up-in-store items never appear on my route. | ✅ demo |
 | D6 | As a driver, I get turn-by-turn navigation and an optimized stop order. | ⬜ later |
 

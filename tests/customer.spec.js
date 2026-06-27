@@ -51,22 +51,38 @@ test.describe("Shopper", () => {
     await expect(page.locator("#summary")).toContainText("collect them at the shop");
   });
 
-  test("C6: distance-based delivery fee, live by address; none on pickup-only", async ({ page }) => {
-    await addToCart(page, ["p-terracotta-8", "p-strawberry-jam"]);
+  test("C6: per-store distance fee (sum of each store→address), live by address; none on pickup-only", async ({ page }) => {
+    await addToCart(page, ["p-terracotta-8", "p-strawberry-jam"]); // Hillside + Maple & Main
     await page.goto("/cart.html");
     await page.waitForSelector(".merchant-group");
 
-    const addr = "12 Lakehill Rd, Burnt Hills";
-    const d = await page.evaluate((a) => BHApp.mockDistanceMi(a), addr);
-    await expect(page.locator("#feeVal")).toHaveText(money(d)); // $1/mi
+    // each store priced on its own distance, in 1–10 mi
+    const perStore = (addr) => page.evaluate((a) => ({
+      hill: BHApp.feeForDistance(BHApp.mockDistanceMi("hillside-pottery", a)),
+      maple: BHApp.feeForDistance(BHApp.mockDistanceMi("maple-main-grocer", a)),
+    }), addr);
+    const inRange = await page.evaluate(() => {
+      const d = BHApp.mockDistanceMi("hillside-pottery", "12 Lakehill Rd, Burnt Hills");
+      return d >= 1 && d <= 10;
+    });
+    expect(inRange).toBe(true);
+
+    let f = await perStore("12 Lakehill Rd, Burnt Hills");
+    await expect(page.locator("#feeVal")).toHaveText(money(f.hill + f.maple)); // total = sum of stores
+    await expect(page.locator('[data-shop="hillside-pottery"]')).toBeVisible(); // per-store line shown
+    await expect(page.locator('[data-shop="maple-main-grocer"]')).toBeVisible();
 
     await page.fill("#addr", "500 Saratoga Rd, Glenville");
-    const d2 = await page.evaluate(() => BHApp.mockDistanceMi("500 Saratoga Rd, Glenville"));
-    await expect(page.locator("#feeVal")).toHaveText(money(d2)); // recomputes live
+    f = await perStore("500 Saratoga Rd, Glenville");
+    await expect(page.locator("#feeVal")).toHaveText(money(f.hill + f.maple)); // recomputes live
 
-    // make everything pickup → no fee, no delivery window
-    await page.click('[data-ful="p-terracotta-8|pickup"]');
+    // jam → pickup: only Hillside's delivery fee remains
     await page.click('[data-ful="p-strawberry-jam|pickup"]');
+    f = await perStore("500 Saratoga Rd, Glenville");
+    await expect(page.locator("#feeVal")).toHaveText(money(f.hill));
+
+    // everything pickup → no fee, no delivery window
+    await page.click('[data-ful="p-terracotta-8|pickup"]');
     await expect(page.locator("#feeVal")).toHaveText(money(0));
     await expect(page.locator("#dw")).toHaveCount(0);
   });

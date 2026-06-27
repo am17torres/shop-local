@@ -76,7 +76,7 @@
           let fulfillRow = "";
           if (mo.status === "confirmed") {
             if (BHApp.deliveryItems(mo).length) {
-              fulfillRow += `<div class="callout" style="margin:10px 0 0"><span class="ic">📦</span><span><strong>${DELIVERY_COPY[mo.delivery || "scheduled"]}</strong> — to ${o.address || "your address"} · ${BHApp.deliveryDistance(o)} mi · ${BHApp.money(BHApp.deliveryFee(o))} delivery</span></div>`;
+              fulfillRow += `<div class="callout" style="margin:10px 0 0"><span class="ic">📦</span><span><strong>${DELIVERY_COPY[mo.delivery || "scheduled"]}</strong> — to ${o.address || "your address"} · ${BHApp.moDistance(mo)} mi from ${shop.name} · ${BHApp.money(BHApp.moDeliveryFee(mo))} delivery</span></div>`;
             }
             if (BHApp.pickupItems(mo).length) {
               fulfillRow += `<div class="callout" style="margin:10px 0 0;background:#eef4ef;border-color:#cfe1d4;color:#356046"><span class="ic">🏬</span><span>Pick-up items ready to collect at ${shop.name}'s counter.</span></div>`;

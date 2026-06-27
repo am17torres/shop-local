@@ -75,12 +75,13 @@
     let orders;
     try { orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || []; }
     catch (e) { return []; }
-    // migrate legacy order-level delivery / pickedUp -> per-store mo.delivery
+    // migrate legacy fields -> per-store mo.delivery + mo.distanceMi
     orders.forEach((o) => (o.merchantOrders || []).forEach((mo) => {
       if (mo.delivery === undefined) {
         mo.delivery = o.delivery === "delivered" ? "delivered"
           : mo.pickedUp ? "out_for_delivery" : "scheduled";
       }
+      if (mo.distanceMi == null) mo.distanceMi = mockDistanceMi(mo.shopId, o.address);
     }));
     return orders;
   }
@@ -108,11 +109,11 @@
       placedAt: Date.now(),
       windowId,
       address: address || "12 Lakehill Rd, Burnt Hills",
-      distanceMi: mockDistanceMi(address || "12 Lakehill Rd, Burnt Hills"),  // snapshot at order time
       merchantOrders: Object.entries(byShop).map(([shopId, items]) => ({
         shopId,
         status: "authorized",     // authorize-and-hold; capture on confirm
         delivery: "scheduled",    // per-store lifecycle: scheduled -> out_for_delivery -> delivered
+        distanceMi: mockDistanceMi(shopId, address || "12 Lakehill Rd, Burnt Hills"), // store -> address, snapshot
         items,
       })),
     };
@@ -164,20 +165,21 @@
     return mo.status === "confirmed" && deliveryItems(mo).length > 0;
   }
 
-  /* ---- distance-based delivery fee ---- */
+  /* ---- distance-based delivery fee ---- per store sub-order ----
+     Each store sits its own distance from the delivery address, so the fee is
+     priced per merchant_order, not once for the whole cart. */
   const DELIVERY_RATE = 1.0; // dollars per mile
-  // Deterministic mock distance from the delivery address (no geocoding in the demo).
-  function mockDistanceMi(address) {
-    const s = String(address || "");
+  // Deterministic mock distance (1–10 mi) from a given store to a given address.
+  function mockDistanceMi(shopId, address) {
+    const s = String(shopId || "") + "|" + String(address || "");
     let h = 0;
     for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-    return Math.round((0.6 + (h % 880) / 100) * 10) / 10; // ~0.6–9.4 mi, stable per address
+    return Math.round((1 + (h % 901) / 100) * 10) / 10; // ~1.0–10.0 mi, stable per (store, address)
   }
   function feeForDistance(mi) { return Math.round(mi * DELIVERY_RATE * 100) / 100; }
-  function deliveryDistance(order) {
-    return order.distanceMi != null ? order.distanceMi : mockDistanceMi(order.address);
-  }
-  function deliveryFee(order) { return feeForDistance(deliveryDistance(order)); }
+  // Distance/fee for one store sub-order. Fee is 0 if the store has only pickup items.
+  function moDistance(mo) { return mo.distanceMi != null ? mo.distanceMi : 0; }
+  function moDeliveryFee(mo) { return deliveryItems(mo).length ? feeForDistance(moDistance(mo)) : 0; }
 
   /* expose */
   window.BHApp = {
@@ -185,7 +187,7 @@
     getCart, addToCart, setQty, setFulfillment, cartCount, clearCart, updateCartCount,
     getOrders, placeOrder, setMerchantOrderStatus, moTotal,
     setMODelivery, confirmedMOs, deliveryItems, pickupItems, orderHasDelivery, isDeliverable,
-    DELIVERY_RATE, mockDistanceMi, feeForDistance, deliveryDistance, deliveryFee,
+    DELIVERY_RATE, mockDistanceMi, feeForDistance, moDistance, moDeliveryFee,
   };
 
   /* keep cart badge + any live order views in sync across tabs */

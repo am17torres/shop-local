@@ -88,12 +88,10 @@
       document.getElementById("routeTitle").textContent = all.length
         ? `Today's loop · ${windowLabel(all[0].o.windowId)}`
         : "Today's delivery loop";
-      // Day totals over the DISTINCT orders still to be delivered (distance/fee are per order, not per store).
-      const remainingOrders = [...new Map(
-        all.filter(({ mo }) => mo.delivery !== "delivered").map(({ o }) => [o.id, o])
-      ).values()];
-      const totalMi = remainingOrders.reduce((a, o) => a + BHApp.deliveryDistance(o), 0);
-      const totalFee = remainingOrders.reduce((a, o) => a + BHApp.deliveryFee(o), 0);
+      // Day totals summed over the store sub-orders still to be delivered (fee is per store).
+      const remaining = all.filter(({ mo }) => mo.delivery !== "delivered");
+      const totalMi = remaining.reduce((a, { mo }) => a + BHApp.moDistance(mo), 0);
+      const totalFee = remaining.reduce((a, { mo }) => a + BHApp.moDeliveryFee(mo), 0);
       document.getElementById("routeSummary").innerHTML = (pickups.length + dropoffs.length)
         ? `${pickups.length} pickup(s) and ${dropoffs.length} drop-off(s) across ${all.length} store order(s). ` +
           `<strong>${totalMi.toFixed(1)} mi · ${BHApp.money(totalFee)} in delivery fees</strong> at $${BHApp.DELIVERY_RATE.toFixed(2)}/mi.`
@@ -115,7 +113,7 @@
       document.getElementById("dropoffs").innerHTML = dropoffs.map(({ o, mo }) => {
         const shop = BH.lookups.shop(mo.shopId);
         const items = BHApp.deliveryItems(mo).map((it) => `${it.emoji} ${it.nameSnapshot} ×${it.qty}`).join(" · ");
-        const sub = `${o.address} · <strong>${BHApp.deliveryDistance(o)} mi → ${BHApp.money(BHApp.deliveryFee(o))} fee</strong> · order ${o.id} · from ${shop.name}`;
+        const sub = `${o.address} · <strong>${BHApp.moDistance(mo)} mi → ${BHApp.money(BHApp.moDeliveryFee(mo))} fee</strong> · order ${o.id} · from ${shop.name}`;
         return stopCard(++seq, `🏠 Deliver to customer`, sub, items,
           `<button class="btn btn-ok btn-sm" data-go="${o.id}|${mo.shopId}|delivered">Mark delivered</button>`);
       }).join("");
