@@ -57,6 +57,7 @@ register, and approve only what they can actually fulfill.
 | M6 | As a merchant, I get an SMS alert and can confirm by replying Y/N. | 🟡 planned |
 | M7 | As a merchant on Square/Shopify/etc., my inventory syncs automatically. | 🟡 planned |
 | M8 | As a merchant, I can do a partial confirm (some items in stock, some not). | ⬜ later |
+| M9 | As a prospective merchant, I can use a pricing calculator to see what I'd net on an order at my revenue tier (platform fee + Stripe deducted). | ✅ demo |
 
 ## 3. Driver
 
@@ -116,6 +117,7 @@ request. Each spec file maps to a persona, and test titles cite the story IDs
 | --- | --- | --- |
 | Shopper | `tests/customer.spec.js` | C1–C8 |
 | Merchant | `tests/merchant.spec.js` | M1–M4 |
+| Merchant (pricing) | `tests/pricing.spec.js` | M9 |
 | Driver | `tests/driver.spec.js` | D1–D5 |
 | Cross-persona | `tests/end-to-end.spec.js` | full lifecycle (C7→M2→D3→C8) |
 
