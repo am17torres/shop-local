@@ -229,7 +229,17 @@ section.block.alt { background: var(--surface); border-top: 1px solid var(--line
 .summary .row.total { color: var(--ink); font-weight: 800; font-size: 1.15rem; border-top: 1px solid var(--line); margin-top: 8px; padding-top: 14px; }
 .field { margin: 14px 0; }
 .field label { display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; }
-.field select, .field input { width: 100%; font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: #fff; }
+.field select, .field input, .field textarea { width: 100%; font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: #fff; }
+.field textarea { resize: vertical; min-height: 72px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 520px) { .field-row { grid-template-columns: 1fr; } }
+
+/* Off-screen, focus-proof, out of the tab order. */
+.hp { position: absolute; left: -5000px; width: 1px; height: 1px; overflow: hidden; }
+
+/* Partner sign-up success panel */
+.partner-ok { text-align: center; padding: 18px 6px; }
+.partner-ok .big { font-size: 2.4rem; }
 
 .callout {
   display: flex; gap: 12px; align-items: flex-start;

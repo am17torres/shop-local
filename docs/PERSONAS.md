@@ -58,6 +58,7 @@ register, and approve only what they can actually fulfill.
 | M7 | As a merchant on Square/Shopify/etc., my inventory syncs automatically. | 🟡 planned |
 | M8 | As a merchant, I can do a partial confirm (some items in stock, some not). | ⬜ later |
 | M9 | As a prospective merchant, I can use a pricing calculator to see what I'd net on an order at my revenue tier (platform fee + Stripe deducted). | ✅ demo |
+| M10 | As a prospective merchant, I can submit a sign-up form (shop, contact, phone, address, what I sell, POS) to request becoming a launch partner. | ✅ demo |
 
 ## 3. Driver
 
@@ -74,6 +75,7 @@ clear day-list and to know the trip and the pay.
 | D4 | As a driver, I see the **distance and delivery fee** per drop-off (each store priced on its own store→address distance) and the day's totals. | ✅ demo |
 | D5 | As a driver, pick-up-in-store items never appear on my route. | ✅ demo |
 | D6 | As a driver, I get turn-by-turn navigation and an optimized stop order. | ⬜ later |
+| D7 | As a prospective driver, I can apply to drive via a sign-up form (contact, vehicle, availability, license/insurance attestation). | ✅ demo |
 
 ## 4. Platform Operator / Dispatch
 
@@ -118,7 +120,9 @@ request. Each spec file maps to a persona, and test titles cite the story IDs
 | Shopper | `tests/customer.spec.js` | C1–C8 |
 | Merchant | `tests/merchant.spec.js` | M1–M4 |
 | Merchant (pricing) | `tests/pricing.spec.js` | M9 |
+| Merchant (sign-up) | `tests/merchant-signup.spec.js` | M10 |
 | Driver | `tests/driver.spec.js` | D1–D5 |
+| Driver (sign-up) | `tests/driver-signup.spec.js` | D7 |
 | Cross-persona | `tests/end-to-end.spec.js` | full lifecycle (C7→M2→D3→C8) |
 
 When a 🟡 story is built, add its test in the same spec and flip it to ✅ here in

@@ -23,6 +23,7 @@
         <a href="storefront.html">Shop the Demo</a>
         <a href="merchant.html">Merchant Dashboard</a>
         <a href="driver.html">Driver Route</a>
+        <a href="drive.html">Drive for us</a>
         <a href="#join" class="cart-pill">Become a Partner</a>
       </nav>
     </div>
@@ -161,26 +162,55 @@
           <p>We're starting small and concentrated so deliveries are reliable from day one. Tell us about your shop and we'll be in touch.</p>
         </div>
         <div class="split">
-          <form class="card" onsubmit="event.preventDefault(); BHApp.notImplemented('Partner sign-up');">
-            <div class="field">
-              <label for="shop">Shop name</label>
-              <input id="shop" type="text" placeholder="e.g. Hillside Pottery" />
+          <div class="card">
+            <form data-partner="merchant">
+              <div class="field">
+                <label for="shop">Shop name</label>
+                <input id="shop" name="shopName" type="text" placeholder="e.g. Hillside Pottery" required />
+              </div>
+              <div class="field">
+                <label for="owner">Your name</label>
+                <input id="owner" name="contactName" type="text" placeholder="Owner / manager" required />
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="email">Email</label>
+                  <input id="email" name="email" type="email" placeholder="you@shop.com" required />
+                </div>
+                <div class="field">
+                  <label for="phone">Mobile phone</label>
+                  <input id="phone" name="phone" type="tel" placeholder="(518) 555-0140" required />
+                </div>
+              </div>
+              <p class="muted" style="margin:-6px 0 0; font-size:0.82rem">We text order confirmations here — reply Y/N to confirm.</p>
+              <div class="field">
+                <label for="address">Shop address</label>
+                <input id="address" name="address" type="text" placeholder="Street, Burnt Hills / Ballston Lake" required />
+              </div>
+              <div class="field">
+                <label for="sells">What do you sell?</label>
+                <input id="sells" name="sells" type="text" placeholder="e.g. pottery &amp; garden goods" required />
+              </div>
+              <div class="field">
+                <label for="ring">What do you ring up sales on today?</label>
+                <select id="ring" name="posSystem">
+                  <option>Square / Shopify / Clover / Lightspeed</option>
+                  <option>A system, but no easy export</option>
+                  <option>Pen &amp; paper / cash register</option>
+                </select>
+              </div>
+              <div class="hp" aria-hidden="true">
+                <label>Company fax<input name="companyFax" data-x type="text" tabindex="-1" autocomplete="off" /></label>
+              </div>
+              <button class="btn btn-primary" type="submit" style="width:100%">Request an intro call</button>
+              <p class="muted center" style="margin:12px 0 0; font-size:0.85rem">No commitment — we'll reach out to learn about your shop.</p>
+            </form>
+            <div class="partner-ok" data-partner-ok hidden>
+              <div class="big">🎉</div>
+              <h3 style="margin:6px 0">You're on the list!</h3>
+              <p class="muted">Thanks for your interest — we'll be in touch about becoming a launch partner.</p>
             </div>
-            <div class="field">
-              <label for="owner">Your name</label>
-              <input id="owner" type="text" placeholder="Owner / manager" />
-            </div>
-            <div class="field">
-              <label for="ring">What do you ring up sales on today?</label>
-              <select id="ring">
-                <option>Square / Shopify / Clover / Lightspeed</option>
-                <option>A system, but no easy export</option>
-                <option>Pen &amp; paper / cash register</option>
-              </select>
-            </div>
-            <button class="btn btn-primary" type="submit" style="width:100%">Request an intro call</button>
-            <p class="muted center" style="margin:12px 0 0; font-size:0.85rem">Demo form — submitting shows a “not yet implemented” note.</p>
-          </form>
+          </div>
           <div class="summary">
             <h3 style="margin-top:0">What we ask of you</h3>
             <p class="muted">Honestly, almost nothing:</p>
