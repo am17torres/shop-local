@@ -22,5 +22,5 @@ test("full lifecycle: order → confirm → pick up → deliver → customer see
   await page.goto("/order.html");
   await page.waitForSelector(".card");
   await expect(page.locator("#orders")).toContainText("Delivered");
-  await expect(page.locator("#orders")).toContainText(/[\d.]+ mi · \$[\d.]+ delivery/);
+  await expect(page.locator("#orders")).toContainText(/[\d.]+ mi from .+ · \$[\d.]+ delivery/);
 });

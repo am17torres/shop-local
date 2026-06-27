@@ -82,13 +82,17 @@
 
       const groups = groupByShop(cart);
       const wrap = document.getElementById("merchantGroups");
-      let subtotal = 0, anyDelivery = false, anyPickup = false;
+      const rate = BHApp.DELIVERY_RATE.toFixed(2);
+      let subtotal = 0, anyPickup = false;
+      const deliveryShops = []; // shopIds with delivery items (each priced on its own store→address distance)
 
       wrap.innerHTML = Object.entries(groups).map(([shopId, items]) => {
         const shop = BH.lookups.shop(shopId);
+        let groupHasDelivery = false, groupHasPickup = false;
         const lines = items.map(({ p, qty, fulfillment }) => {
           subtotal += p.price * qty;
-          if (fulfillment === "pickup") anyPickup = true; else anyDelivery = true;
+          if (fulfillment === "pickup") { groupHasPickup = true; anyPickup = true; }
+          else groupHasDelivery = true;
           return `<div class="line-item" style="flex-wrap:wrap">
             <span class="li-emoji">${p.emoji}</span>
             <div style="flex:1;min-width:170px">
@@ -107,6 +111,14 @@
             <strong style="min-width:64px;text-align:right">${BHApp.money(p.price * qty)}</strong>
           </div>`;
         }).join("");
+        if (groupHasDelivery) deliveryShops.push(shopId);
+        const d = BHApp.mockDistanceMi(shopId, currentAddr);
+        const deliveryLine = groupHasDelivery
+          ? `<div class="muted" data-shop="${shopId}" style="padding:10px 18px;font-size:0.88rem">🚐 Delivery from ${shop.name}: <strong><span class="gdist">${d}</span> mi → <span class="gfee">${BHApp.money(BHApp.feeForDistance(d))}</span></strong> · $${rate}/mi</div>`
+          : "";
+        const pickupLine = groupHasPickup
+          ? `<div class="muted" style="padding:0 18px 10px;font-size:0.88rem">🏬 Pick-up items: collect at ${shop.name}'s counter — no fee.</div>`
+          : "";
         return `<div class="merchant-group">
           <header>
             <span style="font-size:1.3rem">${shop.emoji}</span>
@@ -114,14 +126,15 @@
             <span class="tag mode-${shop.inventoryMode}" style="margin-left:auto">${shop.posLabel}</span>
           </header>
           ${lines}
-          <div style="padding:10px 18px"><span class="muted" style="font-size:0.85rem">This shop confirms its own items separately.</span></div>
+          ${deliveryLine}
+          ${pickupLine}
         </div>`;
       }).join("");
 
+      const anyDelivery = deliveryShops.length > 0;
+      const deliveryTotal = () => deliveryShops.reduce((a, sid) => a + BHApp.feeForDistance(BHApp.mockDistanceMi(sid, currentAddr)), 0);
       const windowOpts = BH.deliveryWindows.map((w) => `<option value="${w.id}">${w.label} — ${w.cutoff}</option>`).join("");
-      const dist = anyDelivery ? BHApp.mockDistanceMi(currentAddr) : 0;
-      const fee = anyDelivery ? BHApp.feeForDistance(dist) : 0;
-      const total = subtotal + fee;
+      const fee0 = deliveryTotal();
       const deliverySection = anyDelivery ? `
         <div class="field">
           <label for="dw">Delivery window</label>
@@ -130,7 +143,7 @@
         <div class="field">
           <label for="addr">Delivery address</label>
           <input id="addr" type="text" value="${currentAddr}" />
-          <p class="muted" style="font-size:0.82rem;margin:6px 0 0">${dist} mi from the pickup hub · $${BHApp.DELIVERY_RATE.toFixed(2)}/mi</p>
+          <p class="muted" style="font-size:0.82rem;margin:6px 0 0">Each store's fee is its own distance to this address × $${rate}/mi.</p>
         </div>` : "";
       const pickupNote = anyPickup ? `
         <div class="callout" style="margin:14px 0;background:#eef4ef;border-color:#cfe1d4;color:#356046">
@@ -140,8 +153,8 @@
       document.getElementById("summary").innerHTML = `
         <h3 style="margin-top:0">Order summary</h3>
         <div class="row"><span>Items (${Object.keys(groups).length} shop${Object.keys(groups).length > 1 ? "s" : ""})</span><span>${BHApp.money(subtotal)}</span></div>
-        <div class="row"><span id="deliveryLabel">Local delivery${anyDelivery ? ` (${dist} mi × $${BHApp.DELIVERY_RATE.toFixed(2)}/mi)` : " (none)"}</span><span id="feeVal">${BHApp.money(fee)}</span></div>
-        <div class="row total"><span>Authorized hold</span><span id="totalVal">${BHApp.money(total)}</span></div>
+        <div class="row"><span>Local delivery${anyDelivery ? ` (${deliveryShops.length} store${deliveryShops.length > 1 ? "s" : ""}, $${rate}/mi)` : " (none)"}</span><span id="feeVal">${BHApp.money(fee0)}</span></div>
+        <div class="row total"><span>Authorized hold</span><span id="totalVal">${BHApp.money(subtotal + fee0)}</span></div>
         ${deliverySection}
         ${pickupNote}
         <div class="callout" style="margin:14px 0">
@@ -158,11 +171,12 @@
       const addrEl = document.getElementById("addr");
       if (addrEl) addrEl.oninput = () => {
         currentAddr = addrEl.value;
-        const d = BHApp.mockDistanceMi(currentAddr);
-        const f = BHApp.feeForDistance(d);
-        const rate = BHApp.DELIVERY_RATE.toFixed(2);
-        addrEl.nextElementSibling.textContent = `${d} mi from the pickup hub · $${rate}/mi`;
-        document.getElementById("deliveryLabel").textContent = `Local delivery (${d} mi × $${rate}/mi)`;
+        deliveryShops.forEach((sid) => {
+          const d2 = BHApp.mockDistanceMi(sid, currentAddr);
+          const el = wrap.querySelector(`[data-shop="${sid}"]`);
+          if (el) { el.querySelector(".gdist").textContent = d2; el.querySelector(".gfee").textContent = BHApp.money(BHApp.feeForDistance(d2)); }
+        });
+        const f = deliveryTotal();
         document.getElementById("feeVal").textContent = BHApp.money(f);
         document.getElementById("totalVal").textContent = BHApp.money(subtotal + f);
       };
