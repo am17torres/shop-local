@@ -111,6 +111,8 @@ function appendRow_(kind, b) {
   var now = Utilities.formatDate(new Date(), ss.getSpreadsheetTimeZone(), 'yyyy-MM-dd HH:mm:ss');
   var row = cols.map(function (c) {
     if (c === 'receivedAt') return now;
+    if (c === 'stage' && !b[c]) return 'inbound';
+    if (c === 'fit' && !b[c]) return 'pending';
     return b[c] != null ? String(b[c]) : '';
   });
   sheet.appendRow(row);
