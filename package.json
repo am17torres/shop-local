@@ -4,7 +4,9 @@
   "private": true,
   "description": "Burnt Hills Local Marketplace — demo + e2e tests",
   "scripts": {
-    "test": "playwright test"
+    "test": "playwright test",
+    "appsscript:push": "cd apps-script && npx --yes @google/clasp@2.4.2 push -f",
+    "appsscript:deploy": "bash apps-script/deploy.sh"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1"
