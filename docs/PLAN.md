@@ -43,7 +43,8 @@ Two layers from one dataset (full detail in [SEARCH.md](SEARCH.md)):
 - Collect interest via the merchant sign-up form (`index.html#join`) and driver
   sign-up form (`drive.html#apply`); both feed a Google Sheet via Apps Script
   (see [PARTNER_INTAKE.md](PARTNER_INTAKE.md)). ✅ live on demo site
-- Interview owners; lock 3–4 diverse launch partners.
+- Interview owners; lock 3–4 diverse launch partners. The founder-led outreach
+  playbook for this is in [MERCHANT_ACQUISITION.md](MERCHANT_ACQUISITION.md).
 - Define the delivery zone by ZIP / radius.
 - Ask each owner **"what do you ring up sales on?"** to sort them into inventory
   tiers.
