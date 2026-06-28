@@ -22,6 +22,7 @@ are collecting real sign-ups. Phase 3 (production build) has not started.
 - [`docs/SEARCH.md`](docs/SEARCH.md) — full-text + faceted feature search.
 - [`docs/INVENTORY_MODEL.md`](docs/INVENTORY_MODEL.md) — the three merchant tiers.
 - [`docs/PARTNER_INTAKE.md`](docs/PARTNER_INTAKE.md) — merchant/driver sign-up forms, Apps Script backend, anti-spam layers.
+- [`docs/MERCHANT_ACQUISITION.md`](docs/MERCHANT_ACQUISITION.md) — the founder-led sell motion to land 3–4 launch-partner shops.
 
 ## Locked decisions — do not relitigate without explicit sign-off
 

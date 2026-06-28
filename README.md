@@ -44,6 +44,7 @@ To run locally: open `site/index.html`, or
 | [docs/SEARCH.md](docs/SEARCH.md) | Full-text + typed faceted feature search design. |
 | [docs/INVENTORY_MODEL.md](docs/INVENTORY_MODEL.md) | The three merchant inventory tiers and how they drive behavior. |
 | [docs/PARTNER_INTAKE.md](docs/PARTNER_INTAKE.md) | Merchant and driver sign-up forms: how submissions are collected, stored, and protected from spam. |
+| [docs/MERCHANT_ACQUISITION.md](docs/MERCHANT_ACQUISITION.md) | The founder-led sell motion to land 3–4 launch-partner shops. |
 
 ## Status
 
