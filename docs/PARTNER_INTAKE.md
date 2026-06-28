@@ -43,7 +43,42 @@ Browser form  ──POST JSON──▶  Apps Script /exec  ──append row─�
    forms show a friendly "sign-ups open soon" note instead of failing.
 5. (Optional) Set `NOTIFY_EMAIL` in `Code.gs` to get an email on each sign-up.
 
-Re-deploy the Apps Script (new version) whenever you edit `Code.gs`.
+Re-deploy the Apps Script (new version) whenever you edit `Code.gs`. You can do
+that by hand (Deploy → Manage deployments → edit → New version), or — better —
+**as code with `clasp`** (next section), which is the only path that works
+without a desktop browser and is what the AI back office uses.
+
+### Deploying as code (clasp / IaC)
+
+Hand-editing the script in the browser doesn't scale (and the editor isn't
+available on mobile). Everything the deploy needs lives in
+[`apps-script/`](../apps-script/): `Code.gs`, `appsscript.json` (pinned scopes),
+`.clasp.json.example`, and `deploy.sh`. The script stays **bound** to the Sheet,
+so the narrow `spreadsheets.currentonly` scope above is preserved — we manage the
+existing bound project by id, we do **not** create a broad-access standalone one.
+
+**One-time bootstrap (needs a desktop browser once):**
+
+1. Turn on the Apps Script API for your account:
+   <https://script.google.com/home/usersettings>.
+2. `npx clasp login` — authorizes `clasp` to manage your Apps Script projects
+   (writes `~/.clasprc.json`; git-ignored). This is a developer-tooling grant on
+   *your* account, separate from the deployed app's runtime scope.
+3. Get the bound script's **scriptId** (Apps Script editor → Project Settings),
+   then `cd apps-script && cp .clasp.json.example .clasp.json` and paste it in.
+4. `cd apps-script && npx clasp deployments` → copy the web-app deployment id and
+   `export BH_APPSSCRIPT_DEPLOYMENT_ID=<that id>` (updating it in place keeps the
+   same `/exec` URL, so `PARTNER_ENDPOINT` never changes).
+
+**Every release after that** (CLI or CI, no browser):
+
+```sh
+npm run appsscript:deploy   # clasp push + redeploy the same web-app version
+```
+
+`~/.clasprc.json` and `apps-script/.clasp.json` are git-ignored; only the
+`.example` is committed. For unattended CI deploys, store the `~/.clasprc.json`
+contents as a secret — leave that off until the manual flow is proven.
 
 ### Permissions: scope it to this one sheet
 
@@ -126,11 +161,12 @@ automated junk. The first two are invisible to real users.
 3. **Shared page token** — embedded in the page and required by the script. It's
    visible in source (so it's a *deterrent*, not a wall), but it stops generic
    spray that POSTs straight at the URL without loading the page.
-4. **Server-side validation** — required fields, email shape, length caps, and a
-   reject for links pasted into name fields. Malformed payloads never reach the
-   sheet.
-5. **Dedup** — identical `email + kind` within 60s is dropped, killing
-   double-submits and retry storms.
+4. **Server-side abuse filters** — length caps and a reject for links pasted
+   into name fields. (Required-field presence and email shape are enforced
+   *client-side* — see "Validation lives client-side" below — so the server
+   keeps every field optional.)
+5. **Dedup** — identical `email + kind` within 60s is dropped (falling back to
+   shop/name when no email is present), killing double-submits and retry storms.
 
 Dropped submissions are returned as a *success* to the client so we never reveal
 which check tripped.
@@ -138,6 +174,28 @@ which check tripped.
 > **Note:** plain Apps Script can't read request headers, so an Origin/Referer
 > check isn't available server-side. The token covers casual direct hits; for a
 > real wall, turn on Turnstile (below).
+
+### Validation lives client-side; the server stays permissive
+
+Required-field presence and email shape are enforced in the browser only — every
+public field carries an HTML `required` attribute (and emails use
+`type="email"`), gated by `form.reportValidity()` in `app.js` before anything is
+sent. The Apps Script deliberately treats **all fields as optional** and only
+runs the abuse filters above.
+
+Why: the same Sheet doubles as the acquisition **CRM**, and the outbound
+sourcing run (see [`MERCHANT_ACQUISITION.md`](MERCHANT_ACQUISITION.md)) loads
+*prospect* rows that legitimately have no email/contact yet. A strict
+required-field server would reject them. Four optional columns —
+`website`, `source`, `stage`, `fit` — are blank for inbound form sign-ups and
+filled by the sourcing run, so outbound prospects and inbound sign-ups share one
+Merchants (pipeline) tab.
+
+> **Tradeoff:** a permissive server widens the spam surface — a direct POST
+> carrying the page token can now append a near-empty row (the required-field
+> wall is gone server-side). The honeypot, time-trap, length caps, link-in-name
+> reject, and dedup still apply; if junk gets through, turn on **Turnstile**
+> (below) — it's the real server-side wall.
 
 ### Escalation: Cloudflare Turnstile (free, near-invisible)
 
