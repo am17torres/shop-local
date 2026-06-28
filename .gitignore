@@ -3,3 +3,8 @@ playwright-report/
 test-results/
 blob-report/
 .DS_Store
+
+# clasp (Apps Script IaC): real project id and OAuth creds are local-only.
+# Commit apps-script/.clasp.json.example instead; copy to apps-script/.clasp.json.
+apps-script/.clasp.json
+.clasprc.json

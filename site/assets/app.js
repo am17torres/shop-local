@@ -244,7 +244,7 @@
         let result = { ok: true }; // dropped submissions look successful but send nothing
         if (!drop) {
           result = await submitPartner({
-            kind, token: PARTNER_TOKEN, page: location.pathname, elapsedMs: elapsed, ...fields,
+            kind, token: PARTNER_TOKEN, page: location.pathname, elapsedMs: elapsed, source: 'inbound:website', ...fields,
           }).catch(() => ({ ok: false, reason: "network" }));
         }
 

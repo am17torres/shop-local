@@ -27,7 +27,9 @@ var NOTIFY_EMAIL = '';
 
 // Column order per kind. The first row of each tab should be these headers.
 var COLUMNS = {
-  merchant: ['receivedAt', 'shopName', 'contactName', 'email', 'phone', 'address', 'sells', 'posSystem', 'page'],
+  // source/stage/fit are blank for inbound form sign-ups; the outbound sourcing
+  // run fills them so prospects and real sign-ups share one pipeline tab.
+  merchant: ['receivedAt', 'shopName', 'contactName', 'email', 'phone', 'address', 'sells', 'posSystem', 'page', 'website', 'source', 'stage', 'fit'],
   driver:   ['receivedAt', 'name', 'town', 'email', 'phone', 'vehicle', 'availability', 'licenseInsurance', 'notes', 'page'],
 };
 var TABS = { merchant: 'Merchants', driver: 'Drivers' };
@@ -50,11 +52,14 @@ function doPost(e) {
     var errors = validate_(kind, body);
     if (errors.length) return json({ ok: false, error: errors.join('; ') });
 
-    // --- dedup: same email + kind within 60s (double-submit / retry storms) ---
+    // --- dedup: same email (or shop/name when email is absent) + kind within
+    // 60s (double-submit / retry storms; lets bulk prospect loads through) ---
     var cache = CacheService.getScriptCache();
-    var dk = 'dedup:' + kind + ':' + String(body.email || '').toLowerCase();
-    if (cache.get(dk)) return json({ ok: true });
-    cache.put(dk, '1', 60);
+    var dkey = String(body.email || '').toLowerCase()
+      || String(body.shopName || body.name || '').toLowerCase();
+    var dk = 'dedup:' + kind + ':' + dkey;
+    if (dkey && cache.get(dk)) return json({ ok: true });
+    if (dkey) cache.put(dk, '1', 60);
 
     appendRow_(kind, body);
     notify_(kind, body);
@@ -68,18 +73,18 @@ function doGet() {
   return json({ ok: true, service: 'bh-partner-intake' }); // health check
 }
 
-/** Field validation. Returns an array of error strings (empty = valid). */
+/** Abuse filtering. Returns an array of error strings (empty = accepted).
+ *
+ * Required-field presence, email format, and the driver license/insurance
+ * attestation are enforced CLIENT-SIDE (HTML `required` + type="email" +
+ * reportValidity in site/assets/app.js). The server intentionally keeps every
+ * field optional so the outbound sourcing run can load prospect rows that lack
+ * an email/contact. What stays here are the abuse filters that don't depend on
+ * a real browser. NOTE: relaxing the server widens the spam surface — a direct
+ * POST with the page token can now append a near-empty row; escalate to
+ * Turnstile (see docs/PARTNER_INTAKE.md) if that gets abused. */
 function validate_(kind, b) {
   var errs = [];
-  var required = kind === 'driver'
-    ? ['name', 'email', 'phone', 'town']
-    : ['shopName', 'contactName', 'email', 'phone', 'address', 'sells'];
-
-  required.forEach(function (f) {
-    if (!String(b[f] || '').trim()) errs.push('missing ' + f);
-  });
-
-  if (b.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(b.email))) errs.push('bad email');
 
   // length caps — keep junk and oversized payloads out of the sheet
   Object.keys(b).forEach(function (k) {
@@ -91,10 +96,6 @@ function validate_(kind, b) {
     if (b[f] && /https?:\/\//i.test(String(b[f]))) errs.push('link in ' + f);
   });
 
-  // drivers must attest to license + insurance
-  if (kind === 'driver' && String(b.licenseInsurance || '').toLowerCase() !== 'yes') {
-    errs.push('missing licenseInsurance');
-  }
   return errs;
 }
 
@@ -110,6 +111,8 @@ function appendRow_(kind, b) {
   var now = Utilities.formatDate(new Date(), ss.getSpreadsheetTimeZone(), 'yyyy-MM-dd HH:mm:ss');
   var row = cols.map(function (c) {
     if (c === 'receivedAt') return now;
+    if (c === 'stage' && !b[c]) return 'prospect';
+    if (c === 'fit' && !b[c]) return 'pending';
     return b[c] != null ? String(b[c]) : '';
   });
   sheet.appendRow(row);
