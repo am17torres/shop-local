@@ -277,8 +277,20 @@
     if (e.key === ORDERS_KEY && typeof window.BHRefresh === "function") window.BHRefresh();
   });
 
+  /* Mobile nav: the hamburger toggles the dropdown on narrow screens. */
+  function wireNavToggle() {
+    const btn = document.querySelector(".nav-toggle");
+    const nav = document.getElementById("nav");
+    if (!btn || !nav) return;
+    btn.addEventListener("click", () => {
+      const open = nav.classList.toggle("open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     updateCartCount();
+    wireNavToggle();
     wirePartnerForms();
     // Wire any element with data-not-implemented to show the toast.
     document.body.addEventListener("click", (e) => {

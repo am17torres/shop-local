@@ -12,14 +12,14 @@ test("full lifecycle: order → confirm → pick up → deliver → customer see
   await confirmAll(page);
 
   // Driver picks up then delivers (D3)
-  await page.goto("/driver.html");
+  await page.goto("/demo/driver.html");
   await page.waitForSelector(".dash-order");
   await page.locator("[data-go]").first().click();              // picked up → out for delivery
   await page.locator('[data-go$="|delivered"]').first().click(); // delivered
   await expect(page.locator("#completed .dash-order")).toHaveCount(1);
 
   // Customer sees the delivered status with distance + fee (C8)
-  await page.goto("/order.html");
+  await page.goto("/demo/order.html");
   await page.waitForSelector(".card");
   await expect(page.locator("#orders")).toContainText("Delivered");
   await expect(page.locator("#orders")).toContainText(/[\d.]+ mi from .+ · \$[\d.]+ delivery/);

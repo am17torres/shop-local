@@ -3,28 +3,25 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Burnt Hills Local Marketplace — sell online with near-zero effort</title>
-  <meta name="description" content="One online storefront for every family-owned shop in Burnt Hills, with same-day local delivery. You keep your shop. We do the rest." />
+  <title>Burnt Hills Local Marketplace — shop your whole town in one cart</title>
+  <meta name="description" content="One online marketplace for every family-owned shop in Burnt Hills. Search the whole town, fill one cart, and get same-day local delivery — faster than Amazon, and the money stays in town." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
   <div class="demo-banner">
     🧪 This is an interactive <strong>concept demo</strong> with sample data — nothing here is live yet.
-    <a href="storefront.html">See what customers would see →</a>
+    <a href="demo/storefront.html">See what shopping it would feel like →</a>
   </div>
 
   <header class="site-header">
     <div class="container">
       <a class="brand" href="index.html"><span>Burnt Hills</span> <span class="dot">●</span> <span>Local Market</span></a>
-      <nav class="nav">
-        <a href="index.html" class="active">For Shops</a>
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
+      <nav class="nav" id="nav">
         <a href="pricing.html">Pricing</a>
-        <a href="storefront.html">Shop the Demo</a>
-        <a href="merchant.html">Merchant Dashboard</a>
-        <a href="driver.html">Driver Route</a>
-        <a href="drive.html">Drive for us</a>
-        <a href="#join" class="cart-pill">Become a Partner</a>
+        <a href="demo/storefront.html">See the Demo</a>
+        <a href="partner.html" class="cart-pill">Become a Partner</a>
       </nav>
     </div>
   </header>
@@ -32,16 +29,17 @@
   <main>
     <section class="hero">
       <div class="container">
-        <span class="eyebrow">For Burnt Hills shop owners</span>
-        <h1>Sell online without changing how your shop works.</h1>
+        <span class="eyebrow">Burnt Hills · Ballston Lake · Ballston Spa</span>
+        <h1>Shop your whole town in one cart.</h1>
         <p class="lead">
-          We put every family-owned shop in town under one roof — one storefront,
-          one cart, same-day local delivery. You keep your register, your pace, and
-          your customers. When an order comes in, you just tap <strong>Confirm</strong>.
+          Stop hunting across a dozen shop websites — or driving store to store — to find
+          what you need. Burnt Hills Local Market puts every family-owned shop in town under
+          one roof: one search, one cart, and <strong>same-day local delivery</strong> that
+          beats waiting on a box from Amazon. Buy local, get it today.
         </p>
         <div class="hero-actions">
-          <a href="#join" class="btn btn-primary">Become a launch partner</a>
-          <a href="merchant.html" class="btn btn-ghost">See your side of it →</a>
+          <a href="demo/storefront.html" class="btn btn-primary">Shop the demo →</a>
+          <a href="partner.html" class="btn btn-ghost">Become a partner</a>
         </div>
       </div>
     </section>
@@ -49,184 +47,94 @@
     <section class="block">
       <div class="container">
         <div class="section-head">
-          <h2>You shouldn't need a tech team to sell online</h2>
-          <p>Big platforms ask you to re-key your whole inventory, learn new software, and ship boxes nationwide. That's not Burnt Hills. Here's the deal instead.</p>
+          <h2>Local should be easier than ordering online — not harder</h2>
+          <p>Today, buying local means calling around, checking five different sites, or just giving up and ordering national. We fix that with one storefront for the whole town.</p>
         </div>
         <div class="grid cols-3">
-          <div class="card">
-            <div class="ic">🗂️</div>
-            <h3>We build your catalog</h3>
-            <p>Send us a list, a spreadsheet, or just let us photograph the shelf. We set up and maintain your listings — not you.</p>
-          </div>
-          <div class="card">
-            <div class="ic">📲</div>
-            <h3>You just confirm orders</h3>
-            <p>An order pings your phone. You tap Confirm if it's in stock, or Reject if it's not. That's the whole job.</p>
-          </div>
-          <div class="card">
-            <div class="ic">🚐</div>
-            <h3>We handle delivery</h3>
-            <p>A local driver picks up on a batched afternoon loop and delivers same-day. No shipping, no packing peanuts.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="block alt">
-      <div class="container">
-        <div class="section-head">
-          <h2>The part shop owners actually worry about</h2>
-          <p><strong>"What if I sell something I don't actually have?"</strong> It can't happen here. The customer's card is only <em>authorized</em> at checkout — a temporary hold. We don't charge it until <strong>you</strong> confirm the item is on the shelf.</p>
-        </div>
-        <div class="grid cols-4">
-          <div class="card">
-            <div class="step-num">1</div>
-            <h3>Customer checks out</h3>
-            <p>Their card is authorized (a hold), not charged.</p>
-          </div>
-          <div class="card">
-            <div class="step-num">2</div>
-            <h3>You get the alert</h3>
-            <p>A text + dashboard ping with the order details.</p>
-          </div>
-          <div class="card">
-            <div class="step-num">3</div>
-            <h3>You confirm</h3>
-            <p>Tap Confirm — only now is the card charged.</p>
-          </div>
-          <div class="card">
-            <div class="step-num">4</div>
-            <h3>Driver picks up</h3>
-            <p>It joins the same-day delivery loop. Done.</p>
-          </div>
-        </div>
-        <p class="center" style="margin-top:28px">
-          <a href="merchant.html" class="btn btn-primary">Try the confirm flow yourself →</a>
-        </p>
-      </div>
-    </section>
-
-    <section class="block">
-      <div class="container">
-        <div class="section-head">
-          <h2>Whatever you ring up sales on, we work with it</h2>
-          <p>We meet your shop where it is. No new point-of-sale system required — ever.</p>
-        </div>
-        <div class="grid cols-3">
-          <div class="card">
-            <span class="tag mode-api_sync">Live sync</span>
-            <h3>You use Square, Shopify, Clover…</h3>
-            <p>We sync your inventory automatically and keep counts fresh. Orders draw down stock for you.</p>
-          </div>
-          <div class="card">
-            <span class="tag mode-periodic">Scheduled</span>
-            <h3>You have a system, but no easy export</h3>
-            <p>We pull a scheduled update so your listings stay close to reality, with the confirm step as backup.</p>
-          </div>
-          <div class="card">
-            <span class="tag mode-confirm_only">Pen &amp; paper</span>
-            <h3>You track stock in your head</h3>
-            <p>Totally fine. Your confirmation <em>is</em> the stock check — no counting software needed.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="block alt">
-      <div class="container">
-        <div class="section-head">
-          <h2>See it the way your customers will</h2>
-          <p>One search box for the whole town. Shoppers filter by exactly what they want and fill a single cart across multiple shops.</p>
-        </div>
-        <div class="grid cols-2">
           <div class="card">
             <div class="ic">🔎</div>
-            <h3>Real search, not just a list</h3>
-            <p>Customers can search "8-inch terracotta planter with drainage" and actually find it — across every shop at once.</p>
-            <p style="margin-top:14px"><a href="storefront.html" class="btn btn-ghost btn-sm">Open the storefront →</a></p>
+            <h3>One search for everything</h3>
+            <p>Search "8-inch terracotta planter" or "local honey" and see results from every shop in town at once — not twelve tabs, not a single phone call.</p>
           </div>
           <div class="card">
             <div class="ic">🛒</div>
-            <h3>One cart, many shops</h3>
-            <p>A customer can buy a planter from you, jam from the grocer, and a hammer from the hardware store — and check out once.</p>
-            <p style="margin-top:14px"><a href="cart.html" class="btn btn-ghost btn-sm">See a sample cart →</a></p>
+            <h3>One cart, every shop</h3>
+            <p>Planter from the garden shop, jam from the grocer, a hammer from the hardware store — all in a single cart and one checkout.</p>
+          </div>
+          <div class="card">
+            <div class="ic">⚡</div>
+            <h3>Same-day, not someday</h3>
+            <p>A neighbor drives a batched afternoon loop and delivers the same day. It's already in your town — why wait two days for a truck from out of state?</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="block" id="join">
+    <section class="block alt">
       <div class="container">
         <div class="section-head">
-          <h2>Be one of our first 3–4 launch partners</h2>
-          <p>We're starting small and concentrated so deliveries are reliable from day one. Tell us about your shop and we'll be in touch.</p>
+          <h2>When you buy here, the town keeps the money</h2>
+          <p>Every order supports a family-owned shop and a local driver — not a warehouse three states away. Same convenience as the big sites, but the dollars stay on Main Street.</p>
         </div>
-        <div class="split">
+        <div class="grid cols-3">
           <div class="card">
-            <form data-partner="merchant">
-              <div class="field">
-                <label for="shop">Shop name</label>
-                <input id="shop" name="shopName" type="text" placeholder="e.g. Hillside Pottery" required />
-              </div>
-              <div class="field">
-                <label for="owner">Your name</label>
-                <input id="owner" name="contactName" type="text" placeholder="Owner / manager" required />
-              </div>
-              <div class="field-row">
-                <div class="field">
-                  <label for="email">Email</label>
-                  <input id="email" name="email" type="email" placeholder="you@shop.com" required />
-                </div>
-                <div class="field">
-                  <label for="phone">Mobile phone</label>
-                  <input id="phone" name="phone" type="tel" placeholder="(518) 555-0140" required />
-                </div>
-              </div>
-              <p class="muted" style="margin:-6px 0 0; font-size:0.82rem">We text order confirmations here — reply Y/N to confirm.</p>
-              <div class="field">
-                <label for="address">Shop address</label>
-                <input id="address" name="address" type="text" placeholder="Street, Burnt Hills / Ballston Lake" required />
-              </div>
-              <div class="field">
-                <label for="sells">What do you sell?</label>
-                <input id="sells" name="sells" type="text" placeholder="e.g. pottery &amp; garden goods" required />
-              </div>
-              <div class="field">
-                <label for="website">Website <span class="muted">(optional)</span></label>
-                <input id="website" name="website" type="url" placeholder="https://yourshop.com" />
-              </div>
-              <div class="field">
-                <label for="ring">What do you ring up sales on today?</label>
-                <select id="ring" name="posSystem">
-                  <option>Square / Shopify / Clover / Lightspeed</option>
-                  <option>A system, but no easy export</option>
-                  <option>Pen &amp; paper / cash register</option>
-                </select>
-              </div>
-              <div class="hp" aria-hidden="true">
-                <label>Company fax<input name="companyFax" data-x type="text" tabindex="-1" autocomplete="off" /></label>
-              </div>
-              <button class="btn btn-primary" type="submit" style="width:100%">Request an intro call</button>
-              <p class="muted center" style="margin:12px 0 0; font-size:0.85rem">No commitment — we'll reach out to learn about your shop.</p>
-            </form>
-            <div class="partner-ok" data-partner-ok hidden>
-              <div class="big">🎉</div>
-              <h3 style="margin:6px 0">You're on the list!</h3>
-              <p class="muted">Thanks for your interest — we'll be in touch about becoming a launch partner.</p>
-            </div>
+            <div class="ic">🏪</div>
+            <h3>Real shops, real people</h3>
+            <p>You're buying from the same shops you'd walk into — now open online, with the inventory you'd actually find on their shelves.</p>
           </div>
-          <div class="summary">
-            <h3 style="margin-top:0">What we ask of you</h3>
-            <p class="muted">Honestly, almost nothing:</p>
-            <div class="summary-list">
-              <div class="row"><span>Set-up work</span><strong>We do it</strong></div>
-              <div class="row"><span>Catalog upkeep</span><strong>We do it</strong></div>
-              <div class="row"><span>Delivery</span><strong>We do it</strong></div>
-              <div class="row"><span>Your job</span><strong>Confirm orders</strong></div>
-              <div class="row total"><span>New software to learn</span><strong>None</strong></div>
-            </div>
+          <div class="card">
+            <div class="ic">🚐</div>
+            <h3>A neighbor delivers it</h3>
+            <p>Deliveries run on one batched local loop driven by someone from town. Faster turnaround, lower footprint, money that stays here.</p>
+          </div>
+          <div class="card">
+            <div class="ic">🔒</div>
+            <h3>Never charged for what's not there</h3>
+            <p>Your card is only authorized at checkout. Nothing is charged until the shop confirms the item is on the shelf — so you never pay for an out-of-stock guess.</p>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div class="section-head">
+          <h2>Three ways to be part of it</h2>
+          <p>A local marketplace only works when the whole town shows up — shoppers, shops, and drivers.</p>
+        </div>
+        <div class="grid cols-3">
+          <div class="card">
+            <div class="ic">🛍️</div>
+            <h3>Shop local</h3>
+            <p>Browse every shop in one place and get it the same day. Try it now — the demo storefront is fully interactive.</p>
+            <p style="margin-top:14px"><a href="demo/storefront.html" class="btn btn-ghost btn-sm">Open the storefront →</a></p>
+          </div>
+          <div class="card">
+            <div class="ic">🏷️</div>
+            <h3>Sell your shop's goods</h3>
+            <p>Get online with near-zero effort. We build your catalog and handle delivery — you just tap Confirm when an order comes in.</p>
+            <p style="margin-top:14px"><a href="partner.html#merchant" class="btn btn-ghost btn-sm">Become a partner shop →</a></p>
+          </div>
+          <div class="card">
+            <div class="ic">🚗</div>
+            <h3>Drive the loop</h3>
+            <p>Earn on your own schedule driving one tight, batched afternoon route. Every stop known up front, paid per mile.</p>
+            <p style="margin-top:14px"><a href="partner.html#driver" class="btn btn-ghost btn-sm">Apply to drive →</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block alt">
+      <div class="container">
+        <div class="section-head center" style="margin:0 auto 28px">
+          <h2>Help build the marketplace your town deserves</h2>
+          <p>We're recruiting our first launch partners — shops and drivers — to make same-day local a reality in Burnt Hills.</p>
+        </div>
+        <p class="center" style="margin:0">
+          <a href="partner.html#merchant" class="btn btn-primary">Become a merchant</a>
+          <a href="partner.html#driver" class="btn btn-ghost">Become a driver</a>
+        </p>
       </div>
     </section>
   </main>
@@ -234,7 +142,7 @@
   <footer class="site-footer">
     <div class="container">
       <div>Burnt Hills Local Marketplace — concept demo</div>
-      <div>Sample data only • <a href="https://github.com/am17torres/shop-local">Project on GitHub</a></div>
+      <div><a href="partner.html">Become a partner</a> • <a href="https://github.com/am17torres/shop-local">Project on GitHub</a></div>
     </div>
   </footer>
 

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shop Burnt Hills — the demo storefront</title>
   <meta name="description" content="Browse sample products from local Burnt Hills shops, with real faceted search." />
-  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="../assets/styles.css" />
 </head>
 <body>
   <div class="demo-banner">
@@ -14,14 +14,14 @@
 
   <header class="site-header">
     <div class="container">
-      <a class="brand" href="index.html"><span>Burnt Hills</span> <span class="dot">●</span> <span>Local Market</span></a>
-      <nav class="nav">
-        <a href="index.html">For Shops</a>
-        <a href="pricing.html">Pricing</a>
-        <a href="storefront.html" class="active">Shop the Demo</a>
-        <a href="merchant.html">Merchant Dashboard</a>
-        <a href="driver.html">Driver Route</a>
-        <a href="cart.html" class="cart-pill">🛒 Cart <span data-cart-count style="display:none">0</span></a>
+      <a class="brand" href="../index.html"><span>Burnt Hills</span> <span class="dot">●</span> <span>Local Market</span></a>
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
+      <nav class="nav" id="nav">
+        <a href="storefront.html" class="active">Shop</a>
+        <a href="cart.html">🛒 Cart <span data-cart-count style="display:none">0</span></a>
+        <a href="merchant.html">Merchant View</a>
+        <a href="driver.html">Driver View</a>
+        <a href="../partner.html" class="cart-pill">Become a Partner</a>
       </nav>
     </div>
   </header>
@@ -48,17 +48,23 @@
         </div>
       </div>
     </div>
+
+    <div class="card" style="margin-top:40px;text-align:center;background:#fdf4ef;border-color:#f0dcb8">
+      <h3 style="margin:0 0 6px">Own a shop in town? This is your storefront too.</h3>
+      <p class="muted" style="margin:0 0 16px">We build and run your listings — you just confirm orders. Same-day local delivery, no new software.</p>
+      <a href="../partner.html#merchant" class="btn btn-primary">Become a partner shop →</a>
+    </div>
   </main>
 
   <footer class="site-footer">
     <div class="container">
       <div>Burnt Hills Local Marketplace — concept demo</div>
-      <div>Sample data only • <a href="https://github.com/am17torres/shop-local">Project on GitHub</a></div>
+      <div><a href="../partner.html">Become a partner</a> • <a href="https://github.com/am17torres/shop-local">Project on GitHub</a></div>
     </div>
   </footer>
 
-  <script src="assets/data.js"></script>
-  <script src="assets/app.js"></script>
+  <script src="../assets/data.js"></script>
+  <script src="../assets/app.js"></script>
   <script>
     /* ---- Faceted search over the mock catalog ---- */
     const PRICE_MAX = 90;

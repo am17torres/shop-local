@@ -19,18 +19,18 @@ test.describe("Driver sign-up", () => {
       await route.fulfill({ status: 200, contentType: "application/json", body: '{"ok":true}' });
     });
 
-    await page.goto("/drive.html");
+    await page.goto("/partner.html");
     const form = page.locator('form[data-partner="driver"]');
-    await form.locator("#name").fill("Sam Rivera");
-    await form.locator("#town").fill("Ballston Lake");
-    await form.locator("#email").fill("sam@drive.test");
-    await form.locator("#phone").fill("5185550199");
+    await form.locator("#d-name").fill("Sam Rivera");
+    await form.locator("#d-town").fill("Ballston Lake");
+    await form.locator("#d-email").fill("sam@drive.test");
+    await form.locator("#d-phone").fill("5185550199");
     await form.locator('input[value="Weekday afternoons"]').check();
     await form.locator('input[value="Weekends"]').check();
     await form.locator('input[name="licenseInsurance"]').check();
     await form.locator('button[type="submit"]').click();
 
-    await expect(page.locator("[data-partner-ok]")).toBeVisible();
+    await expect(page.locator("#driver [data-partner-ok]")).toBeVisible();
     await expect(form).toBeHidden();
     expect(posts).toHaveLength(1);
     expect(posts[0]).toMatchObject({
@@ -47,16 +47,16 @@ test.describe("Driver sign-up", () => {
     let called = false;
     await page.route(ENDPOINT, async (route) => { called = true; await route.fulfill({ status: 200, body: "{}" }); });
 
-    await page.goto("/drive.html");
+    await page.goto("/partner.html");
     const form = page.locator('form[data-partner="driver"]');
-    await form.locator("#name").fill("Sam Rivera");
-    await form.locator("#town").fill("Ballston Lake");
-    await form.locator("#email").fill("sam@drive.test");
-    await form.locator("#phone").fill("5185550199");
+    await form.locator("#d-name").fill("Sam Rivera");
+    await form.locator("#d-town").fill("Ballston Lake");
+    await form.locator("#d-email").fill("sam@drive.test");
+    await form.locator("#d-phone").fill("5185550199");
     // intentionally leave the license/insurance checkbox unchecked
     await form.locator('button[type="submit"]').click();
 
-    await expect(page.locator("[data-partner-ok]")).toBeHidden();
+    await expect(page.locator("#driver [data-partner-ok]")).toBeHidden();
     expect(called).toBe(false);
   });
 });
