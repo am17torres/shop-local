@@ -37,6 +37,52 @@ test.describe("Driver", () => {
     await expect(page.locator("#dropoffs")).toContainText(/[\d.]+ mi → \$[\d.]+ fee/);
   });
 
+  test("D1: authorized (unconfirmed) order does not appear on driver route", async ({ page }) => {
+    await addToCart(page, ["p-terracotta-8"]);
+    await checkout(page);
+    // order is authorized but not yet confirmed — must not appear on driver route
+    await page.goto("/demo/driver.html");
+    await page.waitForTimeout(200);
+    await expect(page.locator("#pickups .dash-order")).toHaveCount(0);
+  });
+
+  test("D1: confirmed delivery order from a real checkout appears on the driver route", async ({ page }) => {
+    await addToCart(page, ["p-terracotta-8"]);
+    await checkout(page);
+    await confirmAll(page);
+    await page.goto("/demo/driver.html");
+    await page.waitForSelector(".dash-order");
+    await expect(page.locator("#pickups .dash-order")).toHaveCount(1);
+  });
+
+  test("D3: rejected order does not appear on the driver route", async ({ page }) => {
+    await addToCart(page, ["p-terracotta-8"]);
+    await checkout(page);
+    await page.goto("/demo/merchant.html");
+    await page.waitForSelector(".dash-order");
+    await page.locator("[data-reject]").first().click();
+    await page.goto("/demo/driver.html");
+    await page.waitForTimeout(200);
+    await expect(page.locator("#pickups .dash-order")).toHaveCount(0);
+    await expect(page.locator("#dropoffs .dash-order")).toHaveCount(0);
+  });
+
+  test("D4: only delivery sub-orders appear on driver route with fee; pickup sub-orders excluded", async ({ page }) => {
+    await addToCart(page, ["p-terracotta-8", "p-strawberry-jam"]); // 2 shops
+    await page.goto("/demo/cart.html");
+    await page.waitForSelector(".merchant-group");
+    await page.click('[data-ful="p-strawberry-jam|pickup"]'); // jam → pickup, pottery stays delivery
+    await page.click("#placeBtn");
+    await page.waitForSelector("#placed", { state: "visible" });
+    await confirmAll(page);
+    await page.goto("/demo/driver.html");
+    await page.waitForSelector(".dash-order");
+    // only the delivery shop (pottery) is a pickup stop; jam (pickup) is excluded
+    await expect(page.locator("#pickups .dash-order")).toHaveCount(1);
+    // day totals reflect only the delivery sub-order's fee
+    await expect(page.locator("#routeSummary")).toContainText(/[\d.]+ mi · \$[\d.]+ in delivery fees/);
+  });
+
   test("D5: pick-up-in-store items never appear on the route", async ({ page }) => {
     await addToCart(page, ["p-terracotta-8"]);
     await page.goto("/demo/cart.html");

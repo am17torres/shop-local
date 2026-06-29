@@ -1,6 +1,6 @@
 // Shopper / Customer user stories (C1–C8). See docs/PERSONAS.md.
 const { test, expect } = require("@playwright/test");
-const { addToCart } = require("./helpers");
+const { addToCart, checkout, confirmAll } = require("./helpers");
 
 const money = (n) => "$" + n.toFixed(2);
 
@@ -94,6 +94,79 @@ test.describe("Shopper", () => {
     await page.click("#placeBtn");
     await expect(page.locator("#placed")).toBeVisible();
     await expect(page.locator("#placed")).toContainText("authorized");
+  });
+
+  test("C6: order page shows delivery fee for delivery items and no fee for pickup items", async ({ page }) => {
+    await addToCart(page, ["p-terracotta-8", "p-strawberry-jam"]); // 2 shops
+    await page.goto("/demo/cart.html");
+    await page.waitForSelector(".merchant-group");
+    await page.click('[data-ful="p-strawberry-jam|pickup"]'); // jam → pickup
+    await page.click("#placeBtn");
+    await page.waitForSelector("#placed", { state: "visible" });
+    await confirmAll(page);
+    await page.goto("/demo/order.html");
+    await page.waitForSelector(".card");
+    await expect(page.locator("#orders")).toContainText("mi from"); // delivery sub-order has fee
+    await expect(page.locator("#orders")).toContainText("collect at");  // pickup sub-order has no fee
+  });
+
+  test("C8: customer sees confirmed status on order page after merchant confirms", async ({ page }) => {
+    await addToCart(page, ["p-terracotta-8"]);
+    await checkout(page);
+    await confirmAll(page);
+    await page.goto("/demo/order.html");
+    await page.waitForSelector(".card");
+    await expect(page.locator("#orders .status.confirmed").first()).toBeVisible();
+    await expect(page.locator("#orders")).toContainText("card charged");
+  });
+
+  test("C8: customer sees rejected status on order page after merchant rejects", async ({ page }) => {
+    await addToCart(page, ["p-terracotta-8"]);
+    await checkout(page);
+    await page.goto("/demo/merchant.html");
+    await page.waitForSelector(".dash-order");
+    await page.locator("[data-reject]").first().click();
+    await page.goto("/demo/order.html");
+    await page.waitForSelector(".card");
+    await expect(page.locator("#orders .status.rejected").first()).toBeVisible();
+    await expect(page.locator("#orders")).toContainText("hold released");
+  });
+
+  test("C8: multi-shop cart shows partly confirmed when one shop confirms and one rejects", async ({ page }) => {
+    await addToCart(page, ["p-terracotta-8", "p-strawberry-jam"]); // 2 different shops
+    await checkout(page);
+    await page.goto("/demo/merchant.html");
+    await page.waitForSelector(".dash-order");
+    await page.locator("[data-confirm]").first().click();
+    await page.waitForTimeout(120);
+    await page.locator("[data-reject]").first().click();
+    await page.goto("/demo/order.html");
+    await page.waitForSelector(".card");
+    await expect(page.locator("#orders .status.confirmed")).toHaveCount(1);
+    await expect(page.locator("#orders .status.rejected")).toHaveCount(1);
+    await expect(page.locator("#orders")).toContainText("partly confirmed");
+  });
+
+  test("C8: customer sees out for delivery after driver picks up", async ({ page }) => {
+    await addToCart(page, ["p-terracotta-8"]);
+    await checkout(page);
+    await confirmAll(page);
+    await page.goto("/demo/driver.html");
+    await page.waitForSelector(".dash-order");
+    await page.locator("[data-go]").first().click(); // scheduled → out_for_delivery
+    await page.goto("/demo/order.html");
+    await page.waitForSelector(".card");
+    await expect(page.locator("#orders")).toContainText("Out for delivery");
+  });
+
+  test("C8: Your Orders link visible in demo nav and navigates to order page", async ({ page }) => {
+    await page.goto("/demo/storefront.html");
+    const ordersLink = page.locator('nav a[href="order.html"]');
+    await expect(ordersLink).toBeVisible();
+    await expect(ordersLink).toContainText("Your Orders");
+    await ordersLink.click();
+    await expect(page).toHaveURL(/order\.html/);
+    await expect(page.locator("h2")).toContainText("Your orders");
   });
 
   test("C8: track each shop's part of the order (pre-confirmation state)", async ({ page }) => {
