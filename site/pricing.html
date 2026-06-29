@@ -115,9 +115,19 @@
     .faq-q { font-weight: 800; font-size: 1.05rem; margin: 0 0 8px; }
     .faq-a { color: var(--muted); margin: 0; font-size: 0.97rem; line-height: 1.6; }
 
+    /* ---- FAQ + comparison two-column layout ---- */
+    .faq-compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+
     @media (max-width: 640px) {
       .plan-grid { grid-template-columns: 1fr; }
       .calc-grid { grid-template-columns: 1fr; }
+      .faq-compare-grid { grid-template-columns: 1fr; gap: 40px; }
+      .faq-compare-grid .compare-col { order: -1; }
     }
   </style>
 </head>
@@ -380,7 +390,7 @@
 
     <section class="block">
       <div class="container">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start;">
+        <div class="faq-compare-grid">
           <div>
             <div class="section-head">
               <h2>Frequently asked questions</h2>
@@ -418,7 +428,7 @@
             </div>
           </div>
 
-          <div>
+          <div class="compare-col">
             <div class="section-head">
               <h2>Compare to the alternatives</h2>
               <p>What other platforms charge for similar reach.</p>
