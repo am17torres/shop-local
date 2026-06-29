@@ -37,6 +37,8 @@ receive them, and know what's happening with the order.
 | C8 | As a shopper, I can track each shop's part of my order independently (authorized → confirmed; delivery scheduled → out → delivered; pickup ready), reachable from the demo nav on any page. | ✅ demo |
 | C9 | As a shopper, I receive SMS/email updates as my order changes. | 🟡 planned |
 | C10 | As a shopper, I can create an account and reorder. | 🟡 planned |
+| C11 | As a shopper with a pickup order, I see "Ready for pickup" when the shop confirms, and can mark it collected. | ⬜ later |
+| C12 | As a shopper, I can confirm receipt or report a problem at the door (refused delivery, wrong item). | ⬜ later |
 
 ## 2. Merchant / Shop Owner
 
@@ -57,6 +59,7 @@ register, and approve only what they can actually fulfill.
 | M6 | As a merchant, I get an SMS alert and can confirm by replying Y/N. | 🟡 planned |
 | M7 | As a merchant on Square/Shopify/etc., my inventory syncs automatically. | 🟡 planned |
 | M8 | As a merchant, I can do a partial confirm (some items in stock, some not). | ⬜ later |
+| M11 | As a merchant, I can flag an item as unavailable after confirming, triggering a partial refund. | ⬜ later |
 | M9 | As a prospective merchant, I can use a pricing calculator to see what I'd net on an order at my revenue tier (platform fee + Stripe deducted). | ✅ demo |
 | M10 | As a prospective merchant, I can submit a sign-up form (shop, contact, phone, address, what I sell, POS) to request becoming a launch partner. | ✅ demo |
 
@@ -75,6 +78,8 @@ clear day-list and to know the trip and the pay.
 | D4 | As a driver, I see the **distance and delivery fee** per drop-off (each store priced on its own store→address distance) and the day's totals. | ✅ demo |
 | D5 | As a driver, pick-up-in-store items never appear on my route. | ✅ demo |
 | D6 | As a driver, I get turn-by-turn navigation and an optimized stop order. | ⬜ later |
+| D8 | As a driver, I can flag a failed pickup stop (shop closed, item missing) so the order is returned for resolution. | ⬜ later |
+| D9 | As a driver, I can flag a refused or undeliverable drop-off (customer not home, rejects at door) for return handling. | ⬜ later |
 | D7 | As a prospective driver, I can apply to drive via a sign-up form (contact, vehicle, availability, license/insurance attestation). | ✅ demo |
 
 ## 4. Platform Operator / Dispatch
@@ -105,6 +110,46 @@ guardrails in [`CLAUDE.md`](../CLAUDE.md).
 | A2 | Keep every PR green on required checks before merge. | ✅ |
 | A3 | Auto-deploy the demo from `main` and print the live URL after each merge. | ✅ |
 | A4 | Keep `docs/` (this file included) in sync with behavior. | ✅ |
+
+---
+
+## Order Status Workflow
+
+Each merchant sub-order tracks two fields independently: `status`
+(payment lifecycle) and `delivery` (fulfilment lifecycle). The diagram below
+reflects the transitions covered by the demo and its e2e test suite. Edge-case
+paths (damaged in transit, refused delivery, failed pickup) are deferred — see
+C12, D8, D9 above.
+
+```mermaid
+stateDiagram-v2
+    direction LR
+
+    [*] --> authorized : shopper checks out\n(card hold placed)
+
+    authorized --> confirmed : merchant confirms\n(payment captured)
+    authorized --> rejected  : merchant rejects\n(hold released)
+
+    state confirmed {
+        direction LR
+        [*]              --> scheduled
+        scheduled        --> out_for_delivery : driver picks up
+        out_for_delivery --> delivered        : driver delivers
+        note right of scheduled
+            Pickup items skip
+            the driver loop —
+            customer collects
+            at the shop counter
+        end note
+    }
+
+    rejected  --> [*]
+    delivered --> [*]
+```
+
+**Gate:** only `confirmed` sub-orders with at least one delivery item appear on
+the driver route. `authorized` and `rejected` sub-orders are never visible to
+the driver.
 
 ---
 
