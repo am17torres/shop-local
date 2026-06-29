@@ -124,20 +124,17 @@
 <body>
   <div class="demo-banner">
     🧪 This is an interactive <strong>concept demo</strong> with sample data — pricing below is indicative, not final.
-    <a href="storefront.html">See what customers would see →</a>
+    <a href="demo/storefront.html">See what customers would see →</a>
   </div>
 
   <header class="site-header">
     <div class="container">
       <a class="brand" href="index.html"><span>Burnt Hills</span> <span class="dot">●</span> <span>Local Market</span></a>
-      <nav class="nav">
-        <a href="index.html">For Shops</a>
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
+      <nav class="nav" id="nav">
         <a href="pricing.html" class="active">Pricing</a>
-        <a href="storefront.html">Shop the Demo</a>
-        <a href="merchant.html">Merchant Dashboard</a>
-        <a href="driver.html">Driver Route</a>
-        <a href="drive.html">Drive for us</a>
-        <a href="index.html#join" class="cart-pill">Become a Partner</a>
+        <a href="demo/storefront.html">See the Demo</a>
+        <a href="partner.html" class="cart-pill">Become a Partner</a>
       </nav>
     </div>
   </header>
@@ -246,8 +243,8 @@
                 </li>
               </ul>
               <div class="plan-cta">
-                <a href="index.html#join" class="btn btn-primary">Become a launch partner</a>
-                <a href="merchant.html" class="btn btn-ghost">See the merchant dashboard →</a>
+                <a href="partner.html#merchant" class="btn btn-primary">Become a launch partner</a>
+                <a href="demo/merchant.html" class="btn btn-ghost">See the merchant dashboard →</a>
               </div>
             </div>
           </div>
@@ -309,8 +306,8 @@
                 </li>
               </ul>
               <div class="plan-cta">
-                <a href="storefront.html" class="btn btn-primary">Browse the storefront</a>
-                <a href="cart.html" class="btn btn-ghost">See a sample cart →</a>
+                <a href="demo/storefront.html" class="btn btn-primary">Browse the storefront</a>
+                <a href="demo/cart.html" class="btn btn-ghost">See a sample cart →</a>
               </div>
             </div>
           </div>
@@ -479,26 +476,15 @@
           <p>We're locking in 3–4 launch partners. Tell us about your shop and we'll follow up within a day.</p>
         </div>
         <div class="split">
-          <form class="card" onsubmit="event.preventDefault(); BHApp.notImplemented('Partner sign-up');">
-            <div class="field">
-              <label for="shop">Shop name</label>
-              <input id="shop" type="text" placeholder="e.g. Hillside Pottery" />
-            </div>
-            <div class="field">
-              <label for="owner">Your name</label>
-              <input id="owner" type="text" placeholder="Owner / manager" />
-            </div>
-            <div class="field">
-              <label for="ring">What do you ring up sales on today?</label>
-              <select id="ring">
-                <option>Square / Shopify / Clover / Lightspeed</option>
-                <option>A system, but no easy export</option>
-                <option>Pen &amp; paper / cash register</option>
-              </select>
-            </div>
-            <button class="btn btn-primary" type="submit" style="width:100%">Request an intro call</button>
-            <p class="muted center" style="margin:12px 0 0; font-size:0.85rem">Demo form — submitting shows a "not yet implemented" note.</p>
-          </form>
+          <div class="card" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
+            <div class="ic" style="font-size:2.4rem">🏷️</div>
+            <h3 style="margin:10px 0 6px">No setup fee. No monthly fee. No charge until an order ships.</h3>
+            <p class="muted" style="margin:0 0 20px">Tell us about your shop and we'll follow up within a day about becoming a launch partner.</p>
+            <p style="margin:0">
+              <a href="partner.html#merchant" class="btn btn-primary">Become a merchant →</a>
+              <a href="partner.html#driver" class="btn btn-ghost">Drive for us →</a>
+            </p>
+          </div>
           <div class="summary">
             <h3 style="margin-top:0">What it costs to start</h3>
             <p class="muted">Honestly, nothing upfront:</p>
@@ -519,7 +505,7 @@
   <footer class="site-footer">
     <div class="container">
       <div>Burnt Hills Local Marketplace — concept demo</div>
-      <div>Sample data only • <a href="https://github.com/am17torres/shop-local">Project on GitHub</a></div>
+      <div><a href="partner.html">Become a partner</a> • <a href="https://github.com/am17torres/shop-local">Project on GitHub</a></div>
     </div>
   </footer>
 

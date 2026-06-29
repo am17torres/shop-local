@@ -13,12 +13,12 @@ async function setup(page) {
 }
 
 async function fillValid(form) {
-  await form.locator("#shop").fill("Hillside Pottery");
-  await form.locator("#owner").fill("Dana Hill");
-  await form.locator("#email").fill("dana@hillside.test");
-  await form.locator("#phone").fill("5185550140");
-  await form.locator("#address").fill("12 Lakehill Rd, Burnt Hills");
-  await form.locator("#sells").fill("pottery & garden goods");
+  await form.locator("#m-shop").fill("Hillside Pottery");
+  await form.locator("#m-owner").fill("Dana Hill");
+  await form.locator("#m-email").fill("dana@hillside.test");
+  await form.locator("#m-phone").fill("5185550140");
+  await form.locator("#m-address").fill("12 Lakehill Rd, Burnt Hills");
+  await form.locator("#m-sells").fill("pottery & garden goods");
 }
 
 test.describe("Merchant sign-up", () => {
@@ -30,12 +30,12 @@ test.describe("Merchant sign-up", () => {
       await route.fulfill({ status: 200, contentType: "application/json", body: '{"ok":true}' });
     });
 
-    await page.goto("/index.html");
+    await page.goto("/partner.html");
     const form = page.locator('form[data-partner="merchant"]');
     await fillValid(form);
     await form.locator('button[type="submit"]').click();
 
-    await expect(page.locator("[data-partner-ok]")).toBeVisible();
+    await expect(page.locator("#merchant [data-partner-ok]")).toBeVisible();
     await expect(form).toBeHidden();
     expect(posts).toHaveLength(1);
     expect(posts[0]).toMatchObject({
@@ -51,10 +51,10 @@ test.describe("Merchant sign-up", () => {
     let called = false;
     await page.route(ENDPOINT, async (route) => { called = true; await route.fulfill({ status: 200, body: "{}" }); });
 
-    await page.goto("/index.html");
+    await page.goto("/partner.html");
     await page.locator('form[data-partner="merchant"] button[type="submit"]').click();
 
-    await expect(page.locator("[data-partner-ok]")).toBeHidden();
+    await expect(page.locator("#merchant [data-partner-ok]")).toBeHidden();
     expect(called).toBe(false);
   });
 
@@ -63,13 +63,13 @@ test.describe("Merchant sign-up", () => {
     let called = false;
     await page.route(ENDPOINT, async (route) => { called = true; await route.fulfill({ status: 200, body: "{}" }); });
 
-    await page.goto("/index.html");
+    await page.goto("/partner.html");
     const form = page.locator('form[data-partner="merchant"]');
     await fillValid(form);
     await form.locator("[data-x]").fill("i am a bot", { force: true });
     await form.locator('button[type="submit"]').click();
 
-    await expect(page.locator("[data-partner-ok]")).toBeVisible();
+    await expect(page.locator("#merchant [data-partner-ok]")).toBeVisible();
     expect(called).toBe(false);
   });
 });

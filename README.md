@@ -21,10 +21,12 @@ stock"* problem with one searchable storefront for the town.
 ## Demo site
 
 An interactive **concept demo** lives in [`site/`](site/) and deploys to
-GitHub Pages at <https://am17torres.github.io/shop-local/>. It's aimed at
-recruiting shop owners and shows the whole flow: faceted storefront → single
-cross-shop cart → confirm-before-charge checkout → merchant confirm/reject
-dashboard → live customer order status → driver route view.
+GitHub Pages at <https://am17torres.github.io/shop-local/>. The marketing pages
+sit at the top level — `index.html` (the shop-the-whole-town value prop),
+`pricing.html`, and `partner.html` (merchant + driver sign-up) — while the
+interactive demo lives under [`site/demo/`](site/demo/) and shows the whole flow:
+faceted storefront → single cross-shop cart → confirm-before-charge checkout →
+merchant confirm/reject dashboard → live customer order status → driver route view.
 
 The storefront uses sample data and localStorage (no production backend yet).
 The **merchant and driver sign-up forms are live** — submissions go to a real

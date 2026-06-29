@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Become a Partner — Burnt Hills Local Marketplace</title>
+  <meta name="description" content="Join the Burnt Hills Local Marketplace as a launch partner — list your shop with near-zero effort, or drive a batched same-day delivery loop." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="demo-banner">
+    🧪 This is an interactive <strong>concept demo</strong>, but these sign-up forms are real — we're collecting launch partners now.
+    <a href="demo/storefront.html">See the shopping demo →</a>
+  </div>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html"><span>Burnt Hills</span> <span class="dot">●</span> <span>Local Market</span></a>
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
+      <nav class="nav" id="nav">
+        <a href="pricing.html">Pricing</a>
+        <a href="demo/storefront.html">See the Demo</a>
+        <a href="partner.html" class="cart-pill active">Become a Partner</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <span class="eyebrow">Launch partners wanted</span>
+        <h1>Help bring same-day local to Burnt Hills.</h1>
+        <p class="lead">
+          We're recruiting our first shops and drivers. Pick your part below — list your
+          shop with near-zero effort, or drive the batched delivery loop. Both take two
+          minutes to sign up and there's no commitment.
+        </p>
+        <div class="hero-actions">
+          <a href="#merchant" class="btn btn-primary">I own a shop →</a>
+          <a href="#driver" class="btn btn-ghost">I want to drive →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MERCHANT ============ -->
+    <section class="block" id="merchant">
+      <div class="container">
+        <div class="section-head">
+          <h2>Become a partner shop</h2>
+          <p>Sell online without changing how your shop works. We build your catalog, run your storefront, and handle delivery — when an order comes in, you just tap <strong>Confirm</strong>.</p>
+        </div>
+
+        <div class="grid cols-3" style="margin-bottom:34px">
+          <div class="card">
+            <div class="ic">🗂️</div>
+            <h3>We build your catalog</h3>
+            <p>Send us a list, a spreadsheet, or just let us photograph the shelf. We set up and maintain your listings — not you.</p>
+          </div>
+          <div class="card">
+            <div class="ic">📲</div>
+            <h3>You just confirm orders</h3>
+            <p>An order pings your phone. Tap Confirm if it's in stock, or Reject if it's not. Your card is never charged until you do — you can't oversell.</p>
+          </div>
+          <div class="card">
+            <div class="ic">🚐</div>
+            <h3>We handle delivery</h3>
+            <p>A local driver picks up on a batched afternoon loop and delivers same-day. No shipping, no packing, no new software to learn.</p>
+          </div>
+        </div>
+
+        <div class="split">
+          <div class="card">
+            <form data-partner="merchant">
+              <div class="field">
+                <label for="m-shop">Shop name</label>
+                <input id="m-shop" name="shopName" type="text" placeholder="e.g. Hillside Pottery" required />
+              </div>
+              <div class="field">
+                <label for="m-owner">Your name</label>
+                <input id="m-owner" name="contactName" type="text" placeholder="Owner / manager" required />
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="m-email">Email</label>
+                  <input id="m-email" name="email" type="email" placeholder="you@shop.com" required />
+                </div>
+                <div class="field">
+                  <label for="m-phone">Mobile phone</label>
+                  <input id="m-phone" name="phone" type="tel" placeholder="(518) 555-0140" required />
+                </div>
+              </div>
+              <p class="muted" style="margin:-6px 0 0; font-size:0.82rem">We text order confirmations here — reply Y/N to confirm.</p>
+              <div class="field">
+                <label for="m-address">Shop address</label>
+                <input id="m-address" name="address" type="text" placeholder="Street, Burnt Hills / Ballston Lake" required />
+              </div>
+              <div class="field">
+                <label for="m-sells">What do you sell?</label>
+                <input id="m-sells" name="sells" type="text" placeholder="e.g. pottery &amp; garden goods" required />
+              </div>
+              <div class="field">
+                <label for="m-website">Website <span class="muted">(optional)</span></label>
+                <input id="m-website" name="website" type="url" placeholder="https://yourshop.com" />
+              </div>
+              <div class="field">
+                <label for="m-ring">What do you ring up sales on today?</label>
+                <select id="m-ring" name="posSystem">
+                  <option>Square / Shopify / Clover / Lightspeed</option>
+                  <option>A system, but no easy export</option>
+                  <option>Pen &amp; paper / cash register</option>
+                </select>
+              </div>
+              <div class="hp" aria-hidden="true">
+                <label>Company fax<input name="companyFax" data-x type="text" tabindex="-1" autocomplete="off" /></label>
+              </div>
+              <button class="btn btn-primary" type="submit" style="width:100%">Request an intro call</button>
+              <p class="muted center" style="margin:12px 0 0; font-size:0.85rem">No commitment — we'll reach out to learn about your shop.</p>
+            </form>
+            <div class="partner-ok" data-partner-ok hidden>
+              <div class="big">🎉</div>
+              <h3 style="margin:6px 0">You're on the list!</h3>
+              <p class="muted">Thanks for your interest — we'll be in touch about becoming a launch partner.</p>
+            </div>
+          </div>
+          <div class="summary">
+            <h3 style="margin-top:0">What we ask of you</h3>
+            <p class="muted">Honestly, almost nothing:</p>
+            <div class="summary-list">
+              <div class="row"><span>Set-up work</span><strong>We do it</strong></div>
+              <div class="row"><span>Catalog upkeep</span><strong>We do it</strong></div>
+              <div class="row"><span>Delivery</span><strong>We do it</strong></div>
+              <div class="row"><span>Your job</span><strong>Confirm orders</strong></div>
+              <div class="row total"><span>New software to learn</span><strong>None</strong></div>
+            </div>
+            <p class="muted" style="margin:16px 0 0; font-size:0.88rem">Curious about fees? <a href="pricing.html">See pricing →</a> · Want to see the shop view? <a href="demo/merchant.html">Open the merchant demo →</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ DRIVER ============ -->
+    <section class="block alt" id="driver">
+      <div class="container">
+        <div class="section-head">
+          <h2>Drive for your neighbors</h2>
+          <p>We batch same-day orders from family-owned shops into one afternoon loop — so you drive a tight, predictable route instead of chasing pings all over town. Get paid per mile, know every stop before you start.</p>
+        </div>
+
+        <div class="grid cols-3" style="margin-bottom:34px">
+          <div class="card">
+            <div class="ic">🗺️</div>
+            <h3>One batched loop</h3>
+            <p>Pickups grouped by shop, then drop-offs — all planned before you leave. You're not zig-zagging town for single orders.</p>
+          </div>
+          <div class="card">
+            <div class="ic">💵</div>
+            <h3>Paid per mile</h3>
+            <p>Each stop shows its distance and fee up front. The day's total is on your list before you turn the key.</p>
+          </div>
+          <div class="card">
+            <div class="ic">📋</div>
+            <h3>A clear day-list</h3>
+            <p>Mark each stop picked up, then delivered. The customer sees it update live. That's the whole job.</p>
+          </div>
+        </div>
+
+        <div class="split">
+          <div class="card">
+            <form data-partner="driver">
+              <div class="field-row">
+                <div class="field">
+                  <label for="d-name">Full name</label>
+                  <input id="d-name" name="name" type="text" placeholder="Your name" required />
+                </div>
+                <div class="field">
+                  <label for="d-town">Town / area</label>
+                  <input id="d-town" name="town" type="text" placeholder="e.g. Ballston Lake" required />
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="d-email">Email</label>
+                  <input id="d-email" name="email" type="email" placeholder="you@email.com" required />
+                </div>
+                <div class="field">
+                  <label for="d-phone">Mobile phone</label>
+                  <input id="d-phone" name="phone" type="tel" placeholder="(518) 555-0140" required />
+                </div>
+              </div>
+              <div class="field">
+                <label for="d-vehicle">Vehicle type</label>
+                <select id="d-vehicle" name="vehicle">
+                  <option>Car</option>
+                  <option>SUV / crossover</option>
+                  <option>Van</option>
+                  <option>Pickup truck</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>When can you usually drive?</label>
+                <label class="facet-opt"><input type="checkbox" name="availability" value="Weekday afternoons" /> Weekday afternoons</label>
+                <label class="facet-opt"><input type="checkbox" name="availability" value="Weekday evenings" /> Weekday evenings</label>
+                <label class="facet-opt"><input type="checkbox" name="availability" value="Weekends" /> Weekends</label>
+              </div>
+              <div class="field">
+                <label for="d-notes">Anything else? <span class="muted">(optional)</span></label>
+                <textarea id="d-notes" name="notes" placeholder="Cargo space, experience, questions…"></textarea>
+              </div>
+              <label class="facet-opt" style="margin:4px 0 14px">
+                <input type="checkbox" name="licenseInsurance" value="yes" required />
+                I have a valid driver's license and current auto insurance.
+              </label>
+              <div class="hp" aria-hidden="true">
+                <label>Company fax<input name="companyFax" data-x type="text" tabindex="-1" autocomplete="off" /></label>
+              </div>
+              <button class="btn btn-primary" type="submit" style="width:100%">Apply to drive</button>
+              <p class="muted center" style="margin:12px 0 0; font-size:0.85rem">No commitment — we'll reach out about the first loop.</p>
+            </form>
+            <div class="partner-ok" data-partner-ok hidden>
+              <div class="big">🚐</div>
+              <h3 style="margin:6px 0">Application received!</h3>
+              <p class="muted">Thanks for applying — we'll be in touch about driving the first loop.</p>
+            </div>
+          </div>
+          <div class="summary">
+            <h3 style="margin-top:0">The deal</h3>
+            <p class="muted">Simple and predictable:</p>
+            <div class="summary-list">
+              <div class="row"><span>Route</span><strong>One batched loop</strong></div>
+              <div class="row"><span>Pay</span><strong>Per mile</strong></div>
+              <div class="row"><span>Stops</span><strong>Known up front</strong></div>
+              <div class="row"><span>Schedule</span><strong>You tell us</strong></div>
+              <div class="row total"><span>Equipment</span><strong>Your vehicle + phone</strong></div>
+            </div>
+            <p class="muted" style="margin:16px 0 0; font-size:0.88rem">Want to see the route view first? <a href="demo/driver.html">Open the driver demo →</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div>Burnt Hills Local Marketplace — concept demo</div>
+      <div>Sample data only • <a href="https://github.com/am17torres/shop-local">Project on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

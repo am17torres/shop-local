@@ -13,8 +13,8 @@ The marketplace site is **100% static** (GitHub Pages). A static page can't
 process a form server-side, so the two sign-up forms POST to an external
 endpoint from the browser:
 
-- **Merchant** form — the `#join` section of [`site/index.html`](../site/index.html).
-- **Driver** form — the `#apply` section of [`site/drive.html`](../site/drive.html).
+- **Merchant** form — the `#merchant` section of [`site/partner.html`](../site/partner.html).
+- **Driver** form — the `#driver` section of [`site/partner.html`](../site/partner.html).
 
 Both are wired by `wirePartnerForms()` in
 [`site/assets/app.js`](../site/assets/app.js), which POSTs JSON to a **Google

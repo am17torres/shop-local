@@ -4,21 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Driver Route — Burnt Hills Local Market</title>
-  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="../assets/styles.css" />
 </head>
 <body>
   <div class="demo-banner">🧪 This is the driver's day-list for one batched loop. Confirmed orders become pickups &amp; drop-offs here. No route yet? Load a sample day.</div>
 
   <header class="site-header">
     <div class="container">
-      <a class="brand" href="index.html"><span>Burnt Hills</span> <span class="dot">●</span> <span>Driver</span></a>
-      <nav class="nav">
-        <a href="index.html">For Shops</a>
-        <a href="pricing.html">Pricing</a>
-        <a href="storefront.html">Shop the Demo</a>
-        <a href="merchant.html">Merchant Dashboard</a>
-        <a href="driver.html" class="active">Driver Route</a>
-        <a href="order.html" class="cart-pill">Customer view →</a>
+      <a class="brand" href="../index.html"><span>Burnt Hills</span> <span class="dot">●</span> <span>Driver</span></a>
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
+      <nav class="nav" id="nav">
+        <a href="storefront.html">Shop</a>
+        <a href="cart.html">🛒 Cart <span data-cart-count style="display:none">0</span></a>
+        <a href="merchant.html">Merchant View</a>
+        <a href="driver.html" class="active">Driver View</a>
+        <a href="../partner.html" class="cart-pill">Become a Partner</a>
       </nav>
     </div>
   </header>
@@ -38,7 +38,7 @@
 
     <div class="callout" style="margin:20px 0">
       <span class="ic">🚐</span>
-      <span>Early on this is one driver, one accountable loop — the texts and this list are the whole dispatch system. Mapping &amp; auto-sequencing (Onfleet/Circuit) come later. <strong>Want to be that driver? <a href="drive.html">Apply to drive →</a></strong></span>
+      <span>Early on this is one driver, one accountable loop — the texts and this list are the whole dispatch system. Mapping &amp; auto-sequencing (Onfleet/Circuit) come later. <strong>Want to be that driver? <a href="../partner.html#driver">Apply to drive →</a></strong></span>
     </div>
 
     <h3>① Pickups</h3>
@@ -52,17 +52,23 @@
     <h3 style="margin-top:30px">Completed</h3>
     <div id="completed"></div>
     <p class="muted" id="emptyCompleted" style="display:none">Delivered stops will move here.</p>
+
+    <div class="card" style="margin-top:40px;text-align:center;background:#fdf4ef;border-color:#f0dcb8">
+      <h3 style="margin:0 0 6px">Want to run this loop?</h3>
+      <p class="muted" style="margin:0 0 16px">One batched afternoon route, paid per mile, every stop known before you start.</p>
+      <a href="../partner.html#driver" class="btn btn-primary">Apply to drive →</a>
+    </div>
   </main>
 
   <footer class="site-footer">
     <div class="container">
       <div>Burnt Hills Local Marketplace — concept demo</div>
-      <div>Sample data only • <a href="https://github.com/am17torres/shop-local">Project on GitHub</a></div>
+      <div><a href="../partner.html">Become a partner</a> • <a href="https://github.com/am17torres/shop-local">Project on GitHub</a></div>
     </div>
   </footer>
 
-  <script src="assets/data.js"></script>
-  <script src="assets/app.js"></script>
+  <script src="../assets/data.js"></script>
+  <script src="../assets/app.js"></script>
   <script>
     function windowLabel(id) {
       const w = BH.deliveryWindows.find((x) => x.id === id);

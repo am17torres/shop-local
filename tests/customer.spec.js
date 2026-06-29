@@ -6,14 +6,14 @@ const money = (n) => "$" + n.toFixed(2);
 
 test.describe("Shopper", () => {
   test("C1: browse every shop's products in one storefront", async ({ page }) => {
-    await page.goto("/storefront.html");
+    await page.goto("/demo/storefront.html");
     await page.waitForSelector(".product-card");
     await expect(page.locator(".product-card")).toHaveCount(30);
     await expect(page.locator("#resultMeta")).toContainText("11 shop");
   });
 
   test("C2: faceted filtering by category, feature, and shop", async ({ page }) => {
-    await page.goto("/storefront.html");
+    await page.goto("/demo/storefront.html");
     await page.waitForSelector(".product-card");
 
     await page.check('[data-feat-enum="roast"][value="dark"]');
@@ -29,7 +29,7 @@ test.describe("Shopper", () => {
   });
 
   test("C3: free-text search matches product attributes, not just names", async ({ page }) => {
-    await page.goto("/storefront.html");
+    await page.goto("/demo/storefront.html");
     await page.waitForSelector(".product-card");
     await page.fill("#q", "terracotta");
     await expect(page.locator(".product-card")).toHaveCount(1);
@@ -39,13 +39,13 @@ test.describe("Shopper", () => {
 
   test("C4: one cart spanning multiple shops", async ({ page }) => {
     await addToCart(page, ["p-terracotta-8", "p-strawberry-jam"]);
-    await page.goto("/cart.html");
+    await page.goto("/demo/cart.html");
     await expect(page.locator(".merchant-group")).toHaveCount(2);
   });
 
   test("C5: choose delivery vs pick-up-in-store per item", async ({ page }) => {
     await addToCart(page, ["p-terracotta-8", "p-strawberry-jam"]);
-    await page.goto("/cart.html");
+    await page.goto("/demo/cart.html");
     await page.waitForSelector(".merchant-group");
     await page.click('[data-ful="p-strawberry-jam|pickup"]');
     await expect(page.locator("#summary")).toContainText("collect them at the shop");
@@ -53,7 +53,7 @@ test.describe("Shopper", () => {
 
   test("C6: per-store distance fee (sum of each store→address), live by address; none on pickup-only", async ({ page }) => {
     await addToCart(page, ["p-terracotta-8", "p-strawberry-jam"]); // Hillside + Maple & Main
-    await page.goto("/cart.html");
+    await page.goto("/demo/cart.html");
     await page.waitForSelector(".merchant-group");
 
     // each store priced on its own distance, in 1–10 mi
@@ -89,7 +89,7 @@ test.describe("Shopper", () => {
 
   test("C7: checkout authorizes (not charged) pending shop confirmation", async ({ page }) => {
     await addToCart(page, ["p-terracotta-8"]);
-    await page.goto("/cart.html");
+    await page.goto("/demo/cart.html");
     await page.waitForSelector(".merchant-group");
     await page.click("#placeBtn");
     await expect(page.locator("#placed")).toBeVisible();
@@ -98,12 +98,12 @@ test.describe("Shopper", () => {
 
   test("C8: track each shop's part of the order (pre-confirmation state)", async ({ page }) => {
     await addToCart(page, ["p-terracotta-8"]);
-    await page.goto("/cart.html");
+    await page.goto("/demo/cart.html");
     await page.waitForSelector(".merchant-group");
     await page.click("#placeBtn");
     await page.waitForSelector("#placed", { state: "visible" });
 
-    await page.goto("/order.html");
+    await page.goto("/demo/order.html");
     await page.waitForSelector(".card");
     await expect(page.locator("#orders")).toContainText("Hillside Pottery");
     await expect(page.locator("#orders .status.authorized").first()).toBeVisible();

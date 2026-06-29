@@ -4,7 +4,7 @@ const { addToCart, checkout, confirmAll } = require("./helpers");
 
 test.describe("Driver", () => {
   test("D1: batched day-list of per-store pickups from the sample day", async ({ page }) => {
-    await page.goto("/driver.html");
+    await page.goto("/demo/driver.html");
     await page.click("#sampleBtn");
     await page.waitForSelector(".dash-order");
     // sample day = 3 orders, 4 store sub-orders (one order spans 2 shops)
@@ -12,7 +12,7 @@ test.describe("Driver", () => {
   });
 
   test("D2 & D3: each store sub-order advances independently", async ({ page }) => {
-    await page.goto("/driver.html");
+    await page.goto("/demo/driver.html");
     await page.click("#sampleBtn");
     await page.waitForSelector(".dash-order");
 
@@ -28,7 +28,7 @@ test.describe("Driver", () => {
   });
 
   test("D4: distance and fee per drop-off plus day totals", async ({ page }) => {
-    await page.goto("/driver.html");
+    await page.goto("/demo/driver.html");
     await page.click("#sampleBtn");
     await page.waitForSelector(".dash-order");
     await expect(page.locator("#routeSummary")).toContainText(/[\d.]+ mi · \$[\d.]+ in delivery fees/);
@@ -39,14 +39,14 @@ test.describe("Driver", () => {
 
   test("D5: pick-up-in-store items never appear on the route", async ({ page }) => {
     await addToCart(page, ["p-terracotta-8"]);
-    await page.goto("/cart.html");
+    await page.goto("/demo/cart.html");
     await page.waitForSelector(".merchant-group");
     await page.click('[data-ful="p-terracotta-8|pickup"]'); // make it pickup
     await page.click("#placeBtn");
     await page.waitForSelector("#placed", { state: "visible" });
     await confirmAll(page);
 
-    await page.goto("/driver.html");
+    await page.goto("/demo/driver.html");
     await page.waitForTimeout(200);
     await expect(page.locator("#pickups .dash-order")).toHaveCount(0);
     await expect(page.locator("#dropoffs .dash-order")).toHaveCount(0);
