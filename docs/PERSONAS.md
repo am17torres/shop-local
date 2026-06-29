@@ -34,7 +34,7 @@ receive them, and know what's happening with the order.
 | C5 | As a shopper, I can choose **delivery** or **pick-up in store** per item. | ✅ demo |
 | C6 | As a shopper, I see a **per-store** distance-based delivery fee ($1/mi from each shop to my address) that updates with my address, and pay none on pickup items. | ✅ demo |
 | C7 | As a shopper, I can check out and have my card **authorized, not charged**, until each shop confirms. | ✅ demo |
-| C8 | As a shopper, I can track each shop's part of my order independently (authorized → confirmed; delivery scheduled → out → delivered; pickup ready). | ✅ demo |
+| C8 | As a shopper, I can track each shop's part of my order independently (authorized → confirmed; delivery scheduled → out → delivered; pickup ready), reachable from the demo nav on any page. | ✅ demo |
 | C9 | As a shopper, I receive SMS/email updates as my order changes. | 🟡 planned |
 | C10 | As a shopper, I can create an account and reorder. | 🟡 planned |
 

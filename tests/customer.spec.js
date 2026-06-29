@@ -96,6 +96,16 @@ test.describe("Shopper", () => {
     await expect(page.locator("#placed")).toContainText("authorized");
   });
 
+  test("C8: Your Orders link visible in demo nav and navigates to order page", async ({ page }) => {
+    await page.goto("/demo/storefront.html");
+    const ordersLink = page.locator('nav a[href="order.html"]');
+    await expect(ordersLink).toBeVisible();
+    await expect(ordersLink).toContainText("Your Orders");
+    await ordersLink.click();
+    await expect(page).toHaveURL(/order\.html/);
+    await expect(page.locator("h2")).toContainText("Your orders");
+  });
+
   test("C8: track each shop's part of the order (pre-confirmation state)", async ({ page }) => {
     await addToCart(page, ["p-terracotta-8"]);
     await page.goto("/demo/cart.html");
